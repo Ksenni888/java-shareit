@@ -1,0 +1,60 @@
+package ru.practicum.shareit.user;
+
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Repository
+public class UserRepositoryImpl implements UserRepository {
+    private final Map<Long, User> users = new HashMap<>();
+
+    private long id;
+
+    @Override
+    public User create(User user) {
+        user.setId(incrementId());
+        users.put(user.getId(), user);
+        return user;
+    }
+
+    @Override
+    public User update(User user, long userId) {
+        if (user.getEmail() != null) {
+            users.get(userId).setEmail(user.getEmail());
+        }
+        if (user.getName() != null) {
+            users.get(userId).setName(user.getName());
+        }
+        return users.get(userId);
+    }
+
+    @Override
+    public List<User> getAll() {
+        return new ArrayList<>(users.values());
+    }
+
+    @Override
+    public User getById(long userId) {
+        return users.get(userId);
+    }
+
+    @Override
+    public void deleteById(long userId) {
+        users.remove(userId);
+    }
+
+    public boolean containsUser(long userId) {
+        if (!users.containsKey(userId)) {
+            return false;
+        }
+        return true;
+    }
+
+    public long incrementId() {
+        return ++id;
+    }
+
+}
