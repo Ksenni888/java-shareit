@@ -63,7 +63,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     public List<ItemDto> findItems(long userId, String text) {
-        return itemsDto.values().stream().filter(x -> x.getName().toLowerCase().contains(text.toLowerCase()) || x.getDescription().toLowerCase().contains(text.toLowerCase())&&(x.getAvailable().equals(true))).collect(Collectors.toList());
+        return itemsDto.values().stream().filter(x -> x.getName().toLowerCase().contains(text.toLowerCase()) || x.getDescription().toLowerCase().contains(text.toLowerCase()) && (x.getAvailable().equals(true))).collect(Collectors.toList());
     }
 
     public long incrementId() {

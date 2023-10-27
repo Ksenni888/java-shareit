@@ -5,9 +5,7 @@ import lombok.Data;
 import java.time.LocalDate;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
-/**
- * TODO Sprint add-bookings.
- */
+
 @Data
 public class Booking {
     private long id;

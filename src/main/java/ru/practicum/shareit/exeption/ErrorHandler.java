@@ -24,6 +24,7 @@ public class ErrorHandler {
         log.warn(e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ErrorResponse handleNoInformationFoundException(final NoInformationFoundException e) {
