@@ -34,10 +34,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(User user, long userId) {
-        if (!userRepository.containsUser(userId)) {
-            log.warn("This user is not exist");
-            throw new NoInformationFoundException("This user is not exist");
-        }
+        userContainsCheck(userId);
         if (userRepository.getAll().stream().anyMatch(x -> (x.getEmail().equals(user.getEmail())) && (userId != x.getId()))) {
             log.warn("User with email is exist");
             throw new ExistExeption("User with email is exist");
@@ -52,19 +49,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getById(long userId) {
-        if (!userRepository.containsUser(userId)) {
-            log.warn("This user is not exist");
-            throw new NoInformationFoundException("This user is not exist");
-        }
+        userContainsCheck(userId);
         return userRepository.getById(userId);
     }
 
     @Override
     public void deleteById(long userId) {
+        userContainsCheck(userId);
+        userRepository.deleteById(userId);
+    }
+
+    public void userContainsCheck(long userId) {
         if (!userRepository.containsUser(userId)) {
             log.warn("This user is not exist");
             throw new NoInformationFoundException("This user is not exist");
         }
-        userRepository.deleteById(userId);
     }
 }

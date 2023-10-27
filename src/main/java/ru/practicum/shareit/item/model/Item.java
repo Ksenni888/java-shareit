@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.Data;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 @Data
@@ -15,6 +16,5 @@ public class Item {
 
     private User owner;
 
-    private Item request;
-
+    private ItemRequest request;
 }

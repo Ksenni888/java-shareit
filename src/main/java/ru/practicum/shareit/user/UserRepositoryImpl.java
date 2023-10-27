@@ -47,14 +47,10 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     public boolean containsUser(long userId) {
-        if (!users.containsKey(userId)) {
-            return false;
-        }
-        return true;
+        return users.containsKey(userId);
     }
 
     public long incrementId() {
         return ++id;
     }
-
 }
