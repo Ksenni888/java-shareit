@@ -14,4 +14,6 @@ public interface UserRepository {
     public void deleteById(long userId);
 
     public boolean containsUser(long userId);
+
+    public boolean existsByEmail(User user);
 }

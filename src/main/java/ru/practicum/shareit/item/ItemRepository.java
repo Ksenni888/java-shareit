@@ -14,4 +14,6 @@ public interface ItemRepository {
     public List<ItemDto> getItemsByUserId(long userId);
 
     public List<ItemDto> findItems(long userId, String text);
+
+    public boolean containsItem(long itemId);
 }

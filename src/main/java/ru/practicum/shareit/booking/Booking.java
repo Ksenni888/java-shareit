@@ -1,12 +1,14 @@
 package ru.practicum.shareit.booking;
 
-import lombok.Data;
-
-import java.time.LocalDate;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
-@Data
+import java.time.LocalDate;
+
+@Getter
+@Setter
 public class Booking {
     private long id;
 
@@ -18,5 +20,5 @@ public class Booking {
 
     private User booker;
 
-    private Status status;
+    private BookingStatus status;
 }

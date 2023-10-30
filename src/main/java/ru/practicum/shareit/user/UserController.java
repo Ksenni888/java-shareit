@@ -20,8 +20,9 @@ import java.util.List;
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
+    private final UserService userService;
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {

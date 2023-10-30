@@ -53,4 +53,8 @@ public class UserRepositoryImpl implements UserRepository {
     public long incrementId() {
         return ++id;
     }
+
+    public boolean existsByEmail(User user) {
+      return users.values().stream().anyMatch(x -> x.getEmail().equals(user.getEmail()));
+    }
 }

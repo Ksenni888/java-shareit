@@ -13,6 +13,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -25,7 +26,7 @@ public class UserServiceImpl implements UserService {
         if (user.getEmail() == null) {
             throw new ValidException("Email can't by empty");
         }
-        if (userRepository.getAll().stream().filter(x -> x.getEmail().equals(user.getEmail())).count() != 0) {
+        if (userRepository.existsByEmail(user)) {
             log.warn("User with email is exist");
             throw new ExistExeption("User with email is exist");
         }

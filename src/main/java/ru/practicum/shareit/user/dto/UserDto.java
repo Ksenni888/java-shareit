@@ -1,11 +1,13 @@
 package ru.practicum.shareit.user.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.validation.constraints.Email;
 
-@Data
+@Setter
+@Getter
 public class UserDto {
     private long id;
 

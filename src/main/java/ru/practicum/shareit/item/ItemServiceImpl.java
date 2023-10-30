@@ -14,9 +14,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
     private static final Logger log = LoggerFactory.getLogger(ItemServiceImpl.class);
+
+    private final ItemRepository itemRepository;
+
+    private final UserRepository userRepository;
 
     @Override
     public ItemDto create(long userId, ItemDto itemDto) {
@@ -39,21 +41,34 @@ public class ItemServiceImpl implements ItemService {
             log.warn("This user is not exist");
             throw new ObjectNotFoundException("This user is not exist");
         }
-
         return itemRepository.create(userId, itemDto);
     }
 
     public ItemDto update(long userId, ItemDto itemDto, long itemId) {
         userCheck(userId);
+
+        if (!itemRepository.containsItem(itemId)) {
+            throw new ObjectNotFoundException("This item not found");
+        }
+        if (itemRepository.findById(userId, itemId).getOwner().getId() != userId) {
+            throw new ObjectNotFoundException("Items can changes only owners");
+        }
+
         return itemRepository.update(userId, itemDto, itemId);
     }
 
     public ItemDto findById(long userId, long itemId) {
+        if (itemRepository.findById(userId, itemId) == null) {
+            throw new ObjectNotFoundException("Item not found");
+        }
         return itemRepository.findById(userId, itemId);
     }
 
     public List<ItemDto> getItemsByUserId(long userId) {
         userCheck(userId);
+        if (userRepository.getById(userId) == null) {
+            throw new ObjectNotFoundException("User not found");
+        }
         return itemRepository.getItemsByUserId(userId);
     }
 

@@ -21,8 +21,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/items")
 public class ItemController {
-    private final ItemService itemService;
     private static final Logger log = LoggerFactory.getLogger(ItemController.class);
+
+    private final ItemService itemService;
 
     @PostMapping
     public ItemDto create(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody ItemDto itemDto) {
