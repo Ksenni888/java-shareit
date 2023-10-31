@@ -62,19 +62,20 @@ public class ItemServiceImpl implements ItemService {
             throw new ObjectNotFoundException("Items can changes only owners");
         }
 
+        Item savedItem = itemRepository.findById(userId, itemId);
         if (item.getAvailable() != null) {
-            itemRepository.findById(userId, itemId).setAvailable(item.getAvailable());
+            savedItem.setAvailable(item.getAvailable());
         }
 
         if (item.getName() != null) {
-            itemRepository.findById(userId, itemId).setName(item.getName());
+            savedItem.setName(item.getName());
         }
 
         if (item.getDescription() != null) {
-            itemRepository.findById(userId, itemId).setDescription(item.getDescription());
+            savedItem.setDescription(item.getDescription());
         }
 
-        return itemMapper.toItemDto(itemRepository.update(userId, item, itemId));
+        return itemMapper.toItemDto(itemRepository.update(userId, savedItem, itemId));
     }
 
     @Override

@@ -48,15 +48,16 @@ public class UserServiceImpl implements UserService {
             throw new ExistExeption("User with email is exist");
         }
 
+        User saveUser = userRepository.getById(userId);
         if (user.getEmail() != null) {
-            userRepository.getById(userId).setEmail(user.getEmail());
+            saveUser.setEmail(user.getEmail());
         }
 
         if (user.getName() != null) {
-            userRepository.getById(userId).setName(user.getName());
+            saveUser.setName(user.getName());
         }
 
-        return userMapper.toUserDto(userRepository.update(user, userId));
+        return userMapper.toUserDto(userRepository.update(saveUser, userId));
     }
 
     @Override

@@ -22,7 +22,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User update(User user, long userId) {
-        return users.get(userId);
+        users.put(userId, user);
+        return user;
     }
 
     @Override
