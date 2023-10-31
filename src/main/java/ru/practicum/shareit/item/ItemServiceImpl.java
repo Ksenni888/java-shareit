@@ -47,6 +47,7 @@ public class ItemServiceImpl implements ItemService {
         return itemMapper.toItemDto(itemRepository.create(userId, item));
     }
 
+    @Override
     public ItemDto update(long userId, Item item, long itemId) {
         userCheck(userId);
 
@@ -60,6 +61,7 @@ public class ItemServiceImpl implements ItemService {
         return itemMapper.toItemDto(itemRepository.update(userId, item, itemId));
     }
 
+    @Override
     public ItemDto findById(long userId, long itemId) {
         if (itemRepository.findById(userId, itemId) == null) {
             throw new ObjectNotFoundException("Item not found");
@@ -67,6 +69,7 @@ public class ItemServiceImpl implements ItemService {
         return itemMapper.toItemDto(itemRepository.findById(userId, itemId));
     }
 
+    @Override
     public List<ItemDto> getItemsByUserId(long userId) {
         userCheck(userId);
         if (userRepository.getById(userId) == null) {
@@ -75,6 +78,7 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.getItemsByUserId(userId).stream().map(itemMapper::toItemDto).collect(Collectors.toList());
     }
 
+    @Override
     public List<ItemDto> findItems(long userId, String text) {
         return itemRepository.findItems(userId, text).stream().map(itemMapper::toItemDto).collect(Collectors.toList());
     }
