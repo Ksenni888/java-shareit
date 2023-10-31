@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -24,27 +25,29 @@ public class UserController {
 
     private final UserService userService;
 
+    private final UserMapper userMapper;
+
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
+    public UserDto create(@Valid @RequestBody UserDto userDto) {
         log.info("Create new user");
-        return userService.create(user);
+        return userService.create(userMapper.toUser(userDto));
     }
 
     @PatchMapping("/{userId}")
-    public User update(@Valid @RequestBody User user, @PathVariable long userId) {
+    public UserDto update(@Valid @RequestBody UserDto userDto, @PathVariable long userId) {
         log.info("Update user");
-        return userService.update(user, userId);
+        return userService.update(userMapper.toUser(userDto), userId);
     }
 
     @GetMapping
     @ResponseBody
-    public List<User> getAll() {
+    public List<UserDto> getAll() {
         log.info("Get all users");
         return userService.getAll();
     }
 
     @GetMapping("/{userId}")
-    public User getById(@PathVariable long userId) {
+    public UserDto getById(@PathVariable long userId) {
         log.info("Get user by id=" + userId);
         return userService.getById(userId);
     }

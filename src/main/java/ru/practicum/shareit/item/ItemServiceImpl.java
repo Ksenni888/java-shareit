@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidException;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,20 +21,21 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
 
     private final UserRepository userRepository;
+    private final ItemMapper itemMapper;
 
     @Override
-    public ItemDto create(long userId, ItemDto itemDto) {
+    public ItemDto create(long userId, Item item) {
         userCheck(userId);
 
-        if (itemDto.getAvailable() == null) {
+        if (item.getAvailable() == null) {
             log.warn("Available can't be empty");
             throw new ValidException("Available can't be empty");
         }
-        if (itemDto.getName().isBlank()) {
+        if (item.getName().isBlank()) {
             log.warn("Name can't be empty");
             throw new ValidException("Name can't be empty");
         }
-        if (itemDto.getDescription() == null) {
+        if (item.getDescription() == null) {
             log.warn("Description can't be empty");
             throw new ValidException("Description can't be empty");
         }
@@ -41,10 +44,10 @@ public class ItemServiceImpl implements ItemService {
             log.warn("This user is not exist");
             throw new ObjectNotFoundException("This user is not exist");
         }
-        return itemRepository.create(userId, itemDto);
+        return itemMapper.toItemDto(itemRepository.create(userId, item));
     }
 
-    public ItemDto update(long userId, ItemDto itemDto, long itemId) {
+    public ItemDto update(long userId, Item item, long itemId) {
         userCheck(userId);
 
         if (!itemRepository.containsItem(itemId)) {
@@ -54,14 +57,14 @@ public class ItemServiceImpl implements ItemService {
             throw new ObjectNotFoundException("Items can changes only owners");
         }
 
-        return itemRepository.update(userId, itemDto, itemId);
+        return itemMapper.toItemDto(itemRepository.update(userId, item, itemId));
     }
 
     public ItemDto findById(long userId, long itemId) {
         if (itemRepository.findById(userId, itemId) == null) {
             throw new ObjectNotFoundException("Item not found");
         }
-        return itemRepository.findById(userId, itemId);
+        return itemMapper.toItemDto(itemRepository.findById(userId, itemId));
     }
 
     public List<ItemDto> getItemsByUserId(long userId) {
@@ -69,11 +72,11 @@ public class ItemServiceImpl implements ItemService {
         if (userRepository.getById(userId) == null) {
             throw new ObjectNotFoundException("User not found");
         }
-        return itemRepository.getItemsByUserId(userId);
+        return itemRepository.getItemsByUserId(userId).stream().map(itemMapper::toItemDto).collect(Collectors.toList());
     }
 
     public List<ItemDto> findItems(long userId, String text) {
-        return itemRepository.findItems(userId, text);
+        return itemRepository.findItems(userId, text).stream().map(itemMapper::toItemDto).collect(Collectors.toList());
     }
 
     public void userCheck(long userId) {

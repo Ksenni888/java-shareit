@@ -1,14 +1,12 @@
 package ru.practicum.shareit.item.dto;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.user.User;
 
 @Setter
 @Getter
-@NoArgsConstructor
+@Builder
 public class ItemDto {
 
     private long id;
@@ -19,11 +17,5 @@ public class ItemDto {
 
     private Boolean available;
 
-    private User owner;
-
-    private ItemRequest request;
-
-    public ItemDto(String name, String description, boolean available, Long aLong) {
-
-    }
+    private long request;
 }

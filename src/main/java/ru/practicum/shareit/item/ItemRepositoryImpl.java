@@ -2,7 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 
 import java.util.HashMap;
@@ -13,42 +13,41 @@ import java.util.stream.Collectors;
 @Repository
 @RequiredArgsConstructor
 public class ItemRepositoryImpl implements ItemRepository {
-    private final Map<Long, ItemDto> itemsDto = new HashMap<>();
 
-    private final UserService userService;
+    private final Map<Long, Item> items = new HashMap<>();
+
     private long itemId;
 
-    public ItemDto create(long userId, ItemDto itemDto) {
-        itemDto.setId(incrementId());
-        itemDto.setOwner(userService.getById(userId));
-        itemsDto.put(itemDto.getId(), itemDto);
-        return itemDto;
+    public Item create(long userId, Item item) {
+        item.setId(incrementId());
+        items.put(item.getId(), item);
+        return item;
     }
 
-    public ItemDto update(long userId, ItemDto itemDto, long itemId) {
+    public Item update(long userId, Item item, long itemId) {
 
-        if (itemDto.getAvailable() != null) {
-            itemsDto.get(itemId).setAvailable(itemDto.getAvailable());
+        if (item.getAvailable() != null) {
+            items.get(itemId).setAvailable(item.getAvailable());
         }
-        if (itemDto.getName() != null) {
-            itemsDto.get(itemId).setName(itemDto.getName());
+        if (item.getName() != null) {
+            items.get(itemId).setName(item.getName());
         }
-        if (itemDto.getDescription() != null) {
-            itemsDto.get(itemId).setDescription(itemDto.getDescription());
+        if (item.getDescription() != null) {
+            items.get(itemId).setDescription(item.getDescription());
         }
-        return itemsDto.get(itemId);
+       return items.get(itemId);
     }
 
-    public ItemDto findById(long userId, long itemId) {
-        return itemsDto.get(itemId);
+    public Item findById(long userId, long itemId) {
+        return items.get(itemId);
     }
 
-    public List<ItemDto> getItemsByUserId(long userId) {
-        return itemsDto.values().stream().filter(x -> x.getOwner().getId() == userId).collect(Collectors.toList());
+    public List<Item> getItemsByUserId(long userId) {
+        return items.values().stream().filter(x -> x.getOwner().getId() == userId).collect(Collectors.toList());
     }
 
-    public List<ItemDto> findItems(long userId, String text) {
-        return itemsDto.values().stream().filter(x -> x.getName().toLowerCase().contains(text.toLowerCase()) || x.getDescription().toLowerCase().contains(text.toLowerCase()) && (x.getAvailable())).collect(Collectors.toList());
+    public List<Item> findItems(long userId, String text) {
+        return items.values().stream().filter(x -> x.getName().toLowerCase().contains(text.toLowerCase()) || x.getDescription().toLowerCase().contains(text.toLowerCase()) && (x.getAvailable())).collect(Collectors.toList());
     }
 
     private long incrementId() {
@@ -56,6 +55,6 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     public boolean containsItem(long itemId) {
-        return itemsDto.containsKey(itemId);
+        return items.containsKey(itemId);
     }
 }
