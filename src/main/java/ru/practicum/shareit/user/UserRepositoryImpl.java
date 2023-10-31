@@ -46,17 +46,15 @@ public class UserRepositoryImpl implements UserRepository {
         users.remove(userId);
     }
 
-    @Override
     public boolean containsUser(long userId) {
         return users.containsKey(userId);
     }
 
-    @Override
-    public boolean existsByEmail(User user) {
-      return users.values().stream().anyMatch(x -> x.getEmail().equals(user.getEmail()));
-    }
-
     public long incrementId() {
         return ++id;
+    }
+
+    public boolean existsByEmail(User user) {
+      return users.values().stream().anyMatch(x -> x.getEmail().equals(user.getEmail()));
     }
 }
