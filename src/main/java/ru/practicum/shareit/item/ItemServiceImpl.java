@@ -31,10 +31,12 @@ public class ItemServiceImpl implements ItemService {
             log.warn("Available can't be empty");
             throw new ValidException("Available can't be empty");
         }
+
         if (item.getName().isBlank()) {
             log.warn("Name can't be empty");
             throw new ValidException("Name can't be empty");
         }
+
         if (item.getDescription() == null) {
             log.warn("Description can't be empty");
             throw new ValidException("Description can't be empty");
@@ -44,6 +46,7 @@ public class ItemServiceImpl implements ItemService {
             log.warn("This user is not exist");
             throw new ObjectNotFoundException("This user is not exist");
         }
+
         return itemMapper.toItemDto(itemRepository.create(userId, item));
     }
 
@@ -54,8 +57,21 @@ public class ItemServiceImpl implements ItemService {
         if (!itemRepository.containsItem(itemId)) {
             throw new ObjectNotFoundException("This item not found");
         }
+
         if (itemRepository.findById(userId, itemId).getOwner().getId() != userId) {
             throw new ObjectNotFoundException("Items can changes only owners");
+        }
+
+        if (item.getAvailable() != null) {
+            itemRepository.findById(userId, itemId).setAvailable(item.getAvailable());
+        }
+
+        if (item.getName() != null) {
+            itemRepository.findById(userId, itemId).setName(item.getName());
+        }
+
+        if (item.getDescription() != null) {
+            itemRepository.findById(userId, itemId).setDescription(item.getDescription());
         }
 
         return itemMapper.toItemDto(itemRepository.update(userId, item, itemId));

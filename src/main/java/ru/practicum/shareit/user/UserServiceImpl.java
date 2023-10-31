@@ -27,13 +27,16 @@ public class UserServiceImpl implements UserService {
             log.warn("id must be 0");
             throw new ValidException("id must be 0");
         }
+
         if (user.getEmail() == null) {
             throw new ValidException("Email can't by empty");
         }
+
         if (userRepository.existsByEmail(user)) {
             log.warn("User with email is exist");
             throw new ExistExeption("User with email is exist");
         }
+
         return userMapper.toUserDto(userRepository.create(user));
     }
 
@@ -44,6 +47,15 @@ public class UserServiceImpl implements UserService {
             log.warn("User with email is exist");
             throw new ExistExeption("User with email is exist");
         }
+
+        if (user.getEmail() != null) {
+            userRepository.getById(userId).setEmail(user.getEmail());
+        }
+
+        if (user.getName() != null) {
+            userRepository.getById(userId).setName(user.getName());
+        }
+
         return userMapper.toUserDto(userRepository.update(user, userId));
     }
 

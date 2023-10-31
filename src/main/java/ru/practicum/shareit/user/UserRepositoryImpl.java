@@ -22,12 +22,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User update(User user, long userId) {
-        if (user.getEmail() != null) {
-            users.get(userId).setEmail(user.getEmail());
-        }
-        if (user.getName() != null) {
-            users.get(userId).setName(user.getName());
-        }
         return users.get(userId);
     }
 
@@ -46,6 +40,7 @@ public class UserRepositoryImpl implements UserRepository {
         users.remove(userId);
     }
 
+    @Override
     public boolean containsUser(long userId) {
         return users.containsKey(userId);
     }
