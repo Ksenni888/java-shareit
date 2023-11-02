@@ -81,7 +81,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto findById(long userId, long itemId) {
         if (!itemRepository.containsItem(itemId)) {
-            //itemRepository.findById(userId, itemId) == null
             throw new ObjectNotFoundException("Item not found");
         }
         return itemMapper.toItemDto(itemRepository.findById(userId, itemId));
