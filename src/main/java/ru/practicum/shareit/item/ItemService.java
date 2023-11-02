@@ -10,7 +10,7 @@ public interface ItemService {
 
     public ItemDto update(long userId, Item item, long itemId);
 
-    public ItemDto findById(long userId, long itemId);
+    public ItemDto findById(long itemId);
 
     public List<ItemDto> getItemsByUserId(long userId);
 

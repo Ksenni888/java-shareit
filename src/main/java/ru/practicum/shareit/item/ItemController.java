@@ -42,7 +42,7 @@ public class ItemController {
     @GetMapping("/{itemId}")
     public ItemDto findById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId) {
         log.info("Get information about item");
-        return itemService.findById(userId, itemId);
+        return itemService.findById(itemId);
     }
 
     @GetMapping

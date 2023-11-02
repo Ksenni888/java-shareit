@@ -18,20 +18,20 @@ public class ItemRepositoryImpl implements ItemRepository {
     private long itemId;
 
     @Override
-    public Item create(long userId, Item item) {
+    public Item create(Item item) {
         item.setId(incrementId());
         items.put(item.getId(), item);
         return item;
     }
 
     @Override
-    public Item update(long userId, Item item, long itemId) {
+    public Item update(Item item, long itemId) {
         items.put(itemId, item);
         return item;
     }
 
     @Override
-    public Item findById(long userId, long itemId) {
+    public Item findById(long itemId) {
         return items.get(itemId);
     }
 

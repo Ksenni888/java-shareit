@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
             throw new ObjectNotFoundException("This user is not exist");
         }
 
-        return itemMapper.toItemDto(itemRepository.create(userId, item));
+        return itemMapper.toItemDto(itemRepository.create(item));
     }
 
     @Override
@@ -58,11 +58,11 @@ public class ItemServiceImpl implements ItemService {
             throw new ObjectNotFoundException("This item not found");
         }
 
-        if (itemRepository.findById(userId, itemId).getOwner().getId() != userId) {
+        if (itemRepository.findById(itemId).getOwner().getId() != userId) {
             throw new ObjectNotFoundException("Items can changes only owners");
         }
 
-        Item savedItem = itemRepository.findById(userId, itemId);
+        Item savedItem = itemRepository.findById(itemId);
         if (item.getAvailable() != null) {
             savedItem.setAvailable(item.getAvailable());
         }
@@ -75,15 +75,15 @@ public class ItemServiceImpl implements ItemService {
             savedItem.setDescription(item.getDescription());
         }
 
-        return itemMapper.toItemDto(itemRepository.update(userId, savedItem, itemId));
+        return itemMapper.toItemDto(itemRepository.update(savedItem, itemId));
     }
 
     @Override
-    public ItemDto findById(long userId, long itemId) {
+    public ItemDto findById(long itemId) {
         if (!itemRepository.containsItem(itemId)) {
             throw new ObjectNotFoundException("Item not found");
         }
-        return itemMapper.toItemDto(itemRepository.findById(userId, itemId));
+        return itemMapper.toItemDto(itemRepository.findById(itemId));
     }
 
     @Override
