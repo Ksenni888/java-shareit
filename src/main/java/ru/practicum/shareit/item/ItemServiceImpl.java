@@ -25,7 +25,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto create(long userId, Item item) {
-        userCheck(userId);
+        checkUser(userId);
 
         if (item.getAvailable() == null) {
             log.warn("Available can't be empty");
@@ -52,7 +52,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto update(long userId, Item item, long itemId) {
-        userCheck(userId);
+        checkUser(userId);
 
         if (!itemRepository.containsItem(itemId)) {
             throw new ObjectNotFoundException("This item not found");
@@ -80,7 +80,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto findById(long userId, long itemId) {
-        if (itemRepository.findById(userId, itemId) == null) {
+        if (!itemRepository.containsItem(itemId)) {
+            //itemRepository.findById(userId, itemId) == null
             throw new ObjectNotFoundException("Item not found");
         }
         return itemMapper.toItemDto(itemRepository.findById(userId, itemId));
@@ -88,19 +89,23 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemsByUserId(long userId) {
-        userCheck(userId);
+        checkUser(userId);
         if (userRepository.getById(userId) == null) {
             throw new ObjectNotFoundException("User not found");
         }
-        return itemRepository.getItemsByUserId(userId).stream().map(itemMapper::toItemDto).collect(Collectors.toList());
+        return itemRepository.getItemsByUserId(userId).stream()
+                .map(itemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<ItemDto> findItems(long userId, String text) {
-        return itemRepository.findItems(userId, text).stream().map(itemMapper::toItemDto).collect(Collectors.toList());
+    public List<ItemDto> findItems(String text) {
+        return itemRepository.findItems(text).stream()
+                .map(itemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
-    public void userCheck(long userId) {
+    public void checkUser(long userId) {
         if (userId == 0) {
             log.warn("User id can't be empty");
             throw new ValidException("User id can't be empty");

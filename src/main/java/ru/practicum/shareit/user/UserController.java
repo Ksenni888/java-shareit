@@ -49,7 +49,7 @@ public class UserController {
     @GetMapping("/{userId}")
     public UserDto getById(@PathVariable long userId) {
         log.info("Get user by id=" + userId);
-        return userService.getById(userId);
+        return userMapper.toDto(userService.getById(userId));
     }
 
     @DeleteMapping("/{userId}")

@@ -37,12 +37,16 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public List<Item> getItemsByUserId(long userId) {
-        return items.values().stream().filter(x -> x.getOwner().getId() == userId).collect(Collectors.toList());
+        return items.values().stream()
+                .filter(x -> x.getOwner().getId() == userId)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Item> findItems(long userId, String text) {
-        return items.values().stream().filter(x -> x.getName().toLowerCase().contains(text.toLowerCase()) || x.getDescription().toLowerCase().contains(text.toLowerCase()) && (x.getAvailable())).collect(Collectors.toList());
+    public List<Item> findItems(String text) {
+        return items.values().stream()
+                .filter(x -> x.getName().toLowerCase().contains(text.toLowerCase()) || x.getDescription().toLowerCase().contains(text.toLowerCase()) && (x.getAvailable()))
+                .collect(Collectors.toList());
     }
 
     @Override

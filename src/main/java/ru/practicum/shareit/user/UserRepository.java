@@ -15,5 +15,5 @@ public interface UserRepository {
 
     public boolean containsUser(long userId);
 
-    public boolean existsByEmail(User user);
+    public boolean existsByEmail(String email);
 }

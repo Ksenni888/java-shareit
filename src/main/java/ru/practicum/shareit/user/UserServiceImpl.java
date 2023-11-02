@@ -32,17 +32,17 @@ public class UserServiceImpl implements UserService {
             throw new ValidException("Email can't by empty");
         }
 
-        if (userRepository.existsByEmail(user)) {
+        if (userRepository.existsByEmail(user.getEmail())) {
             log.warn("User with email is exist");
             throw new ExistExeption("User with email is exist");
         }
 
-        return userMapper.toUserDto(userRepository.create(user));
+        return userMapper.toDto(userRepository.create(user));
     }
 
     @Override
     public UserDto update(User user, long userId) {
-        userContainsCheck(userId);
+        checkUserExists(userId);
         if (userRepository.getAll().stream().anyMatch(x -> (x.getEmail().equals(user.getEmail())) && (userId != x.getId()))) {
             log.warn("User with email is exist");
             throw new ExistExeption("User with email is exist");
@@ -57,27 +57,27 @@ public class UserServiceImpl implements UserService {
             saveUser.setName(user.getName());
         }
 
-        return userMapper.toUserDto(userRepository.update(saveUser, userId));
+        return userMapper.toDto(userRepository.update(saveUser, userId));
     }
 
     @Override
     public List<UserDto> getAll() {
-        return userRepository.getAll().stream().map(userMapper::toUserDto).collect(Collectors.toList());
+        return userRepository.getAll().stream().map(userMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
-    public UserDto getById(long userId) {
-        userContainsCheck(userId);
-        return userMapper.toUserDto(userRepository.getById(userId));
+    public User getById(long userId) {
+        checkUserExists(userId);
+        return userRepository.getById(userId);
     }
 
     @Override
     public void deleteById(long userId) {
-        userContainsCheck(userId);
+        checkUserExists(userId);
         userRepository.deleteById(userId);
     }
 
-    public void userContainsCheck(long userId) {
+    public void checkUserExists(long userId) {
         if (!userRepository.containsUser(userId)) {
             log.warn("This user is not exist");
             throw new ObjectNotFoundException("This user is not exist");

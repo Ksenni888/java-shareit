@@ -13,7 +13,7 @@ public interface ItemRepository {
 
     public List<Item> getItemsByUserId(long userId);
 
-    public List<Item> findItems(long userId, String text);
+    public List<Item> findItems(String text);
 
     public boolean containsItem(long itemId);
 }

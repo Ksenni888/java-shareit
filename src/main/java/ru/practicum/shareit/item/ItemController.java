@@ -55,6 +55,6 @@ public class ItemController {
     @ResponseBody
     public List<ItemDto> findItems(@RequestHeader("X-Sharer-User-Id") long userId, @RequestParam(defaultValue = "Write the text") String text) {
         log.info("Seach items by request with available status");
-        return itemService.findItems(userId, text);
+        return itemService.findItems(text);
     }
 }
