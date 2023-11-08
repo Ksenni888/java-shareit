@@ -10,6 +10,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
 
     private final UserRepository userRepository;
+
     private final ItemMapper itemMapper;
 
     @Override
@@ -99,7 +101,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> findItems(String text) {
-
+        if (text.isBlank()) {
+            return Collections.emptyList();
+        }
         return itemRepository.findItems(text).stream()
                 .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());

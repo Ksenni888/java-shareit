@@ -23,37 +23,39 @@ import java.util.List;
 public class ItemController {
     private static final Logger log = LoggerFactory.getLogger(ItemController.class);
 
+    private final String USER_ID_HEADER = "X-Sharer-User-Id";
+
     private final ItemService itemService;
 
     private final ItemMapper itemMapper;
 
     @PostMapping
-    public ItemDto create(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody ItemDto itemDto) {
+    public ItemDto create(@RequestHeader(USER_ID_HEADER) long userId, @RequestBody ItemDto itemDto) {
         log.info("Create item");
         return itemService.create(userId, itemMapper.toItem(itemDto, userId));
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody ItemDto itemDto, @PathVariable long itemId) {
+    public ItemDto update(@RequestHeader(USER_ID_HEADER) long userId, @RequestBody ItemDto itemDto, @PathVariable long itemId) {
         log.info("Update item");
         return itemService.update(userId, itemMapper.toItem(itemDto, userId), itemId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto findById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId) {
+    public ItemDto findById(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long itemId) {
         log.info("Get information about item");
         return itemService.findById(itemId);
     }
 
     @GetMapping
-    public List<ItemDto> getItemsByUserId(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemDto> getItemsByUserId(@RequestHeader(USER_ID_HEADER) long userId) {
         log.info("Get all user's items");
         return itemService.getItemsByUserId(userId);
     }
 
     @GetMapping("/search")
     @ResponseBody
-    public List<ItemDto> findItems(@RequestHeader("X-Sharer-User-Id") long userId, @RequestParam(defaultValue = "Write the text") String text) {
+    public List<ItemDto> findItems(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam(defaultValue = "Write the text") String text) {
         log.info("Seach items by request with available status");
         return itemService.findItems(text);
     }

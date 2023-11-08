@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto update(User user, long userId) {
         checkUserExists(userId);
-        if (userRepository.getAll().stream().anyMatch(x -> (x.getEmail().equals(user.getEmail())) && (userId != x.getId()))) {
+        if (userRepository.existByEmailAndId(user, userId)) {
             log.warn("User with email is exist");
             throw new ExistExeption("User with email is exist");
         }
@@ -62,7 +62,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getAll() {
-        return userRepository.getAll().stream().map(userMapper::toDto).collect(Collectors.toList());
+        return userRepository.getAll().stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
