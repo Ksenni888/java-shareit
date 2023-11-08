@@ -99,6 +99,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> findItems(String text) {
+
         return itemRepository.findItems(text).stream()
                 .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
