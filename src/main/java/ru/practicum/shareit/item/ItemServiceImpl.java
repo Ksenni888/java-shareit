@@ -12,7 +12,6 @@ import ru.practicum.shareit.user.UserRepository;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,27 +43,27 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidException("Description can't be empty");
         }
 
-        if (!userRepository.containsUser(userId)) {
+        if (userRepository.existsById(userId)) {
             log.warn("This user is not exist");
             throw new ObjectNotFoundException("This user is not exist");
         }
 
-        return itemMapper.toItemDto(itemRepository.create(item));
+        return itemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
     public ItemDto update(long userId, Item item, long itemId) {
         checkUser(userId);
 
-        if (!itemRepository.containsItem(itemId)) {
+        if (!itemRepository.existsById(itemId)) {
             throw new ObjectNotFoundException("This item not found");
         }
 
-        if (itemRepository.findById(itemId).getOwner().getId() != userId) {
+        if (itemRepository.getReferenceById(itemId).getOwner().getId() != userId) {
             throw new ObjectNotFoundException("Items can changes only owners");
         }
 
-        Item savedItem = itemRepository.findById(itemId);
+        Item savedItem = itemRepository.getReferenceById(itemId);
         if (item.getAvailable() != null) {
             savedItem.setAvailable(item.getAvailable());
         }
@@ -77,26 +76,28 @@ public class ItemServiceImpl implements ItemService {
             savedItem.setDescription(item.getDescription());
         }
 
-        return itemMapper.toItemDto(itemRepository.update(savedItem, itemId));
+        return itemMapper.toItemDto(itemRepository.save(savedItem));
     }
 
     @Override
     public ItemDto findById(long itemId) {
-        if (!itemRepository.containsItem(itemId)) {
+        if (!itemRepository.existsById(itemId)) {
             throw new ObjectNotFoundException("Item not found");
         }
-        return itemMapper.toItemDto(itemRepository.findById(itemId));
+        return itemMapper.toItemDto(itemRepository.getReferenceById(itemId));
     }
 
     @Override
     public List<ItemDto> getItemsByUserId(long userId) {
         checkUser(userId);
-        if (userRepository.getById(userId) == null) {
+        if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
         }
-        return itemRepository.getItemsByUserId(userId).stream()
-                .map(itemMapper::toItemDto)
-                .collect(Collectors.toList());
+        return null;
+//                itemRepository.findByUserId(userId).stream()
+//                .map(itemMapper::toItemDto)
+//                .collect(Collectors.toList());
+
     }
 
     @Override
@@ -104,9 +105,10 @@ public class ItemServiceImpl implements ItemService {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemRepository.findItems(text).stream()
-                .map(itemMapper::toItemDto)
-                .collect(Collectors.toList());
+        return  null;
+//                itemRepository.search(text).stream()
+//                .map(itemMapper::toItemDto)
+//                .collect(Collectors.toList());
     }
 
     public void checkUser(long userId) {

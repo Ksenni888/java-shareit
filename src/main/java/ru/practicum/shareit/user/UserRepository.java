@@ -1,21 +1,18 @@
 package ru.practicum.shareit.user;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository {
-    public User create(User user);
 
-    public User update(User user, long userId);
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    public List<User> getAll();
+//    @Query(" select i from User i " +
+//            "where (i.email) like upper(concat('%', ?1, '%')) ")
 
-    public User getById(long userId);
+ //   boolean findByEmailLike(String email);
 
-    public void deleteById(long userId);
+//    @Query(" select i from User i " +
+//            "where (i.email) like upper(concat('%', ?1, '%')) and" +
+//    "where (i.user_id) like upper" )
 
-    public boolean containsUser(long userId);
-
-    public boolean existsByEmail(String email);
-
-    public boolean existByEmailAndId(User user, long userId);
+ //   boolean findByEmailAndId(String email, long userId);
 }
