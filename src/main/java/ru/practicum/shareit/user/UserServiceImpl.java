@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto update(User user, long userId) {
         checkUserExists(userId);
+
 //        if (userRepository.findByEmailAndId(user.getEmail(), userId) != null) {
 //            log.warn("User with email is exist");
 //            throw new ExistExeption("User with email is exist");
