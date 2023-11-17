@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemMapper {
 
-    private final UserService userService;
-
     private final UserRepository userRepository;
 
     private final ItemRequestService itemRequestService;
@@ -47,12 +45,11 @@ public class ItemMapper {
     public Item toItem(ItemDto itemDto, long userId) {
         User saveUser = userRepository.getReferenceById(userId);
         return Item.builder()
-                //.id(itemDto.getId())
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
                 .request(itemDto.getRequest() != 0 ? itemRequestService.findRequestById(itemDto.getRequest(), userId) : null)
-                .owner(userRepository.existsById(userId) ? saveUser : null) //new
+                .owner(userRepository.existsById(userId) ? saveUser : null)
                 .build();
     }
 

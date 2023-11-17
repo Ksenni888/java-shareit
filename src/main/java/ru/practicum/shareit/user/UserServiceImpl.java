@@ -32,12 +32,10 @@ public class UserServiceImpl implements UserService {
         }
 
         try {
-            userRepository.save(user);
+            return userMapper.toDto(userRepository.save(user));
         } catch (Exception e) {
             throw new ExistExeption("Email can't be the same");
         }
-
-        return userMapper.toDto(userRepository.save(user));
     }
 
     @Override

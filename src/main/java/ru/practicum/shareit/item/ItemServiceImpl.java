@@ -32,7 +32,6 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
 
     private final CommentRepository commentRepository;
-    private final ItemMapper itemMapper;
 
     @Override
     @Transactional
@@ -54,14 +53,14 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public Item update(long userId, Item item, long itemId) {
-        checkUser(userId);
+     //   checkUser(userId);
 
         if (!itemRepository.existsById(itemId)) {
             throw new ObjectNotFoundException("This item not found");
         }
 
-        Item savedItem = itemRepository.findById(itemId).orElseThrow();
-
+      //  Item savedItem = itemRepository.findById(itemId).orElseThrow();
+        Item savedItem = itemRepository.getReferenceById(itemId); //new
         if (item.getAvailable() != null) {
             savedItem.setAvailable(item.getAvailable());
         }
@@ -93,7 +92,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> getItemsByUserId(long userId) {
-        checkUser(userId);
+      //  checkUser(userId);
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
         }
@@ -124,11 +123,11 @@ public class ItemServiceImpl implements ItemService {
             throw new ObjectNotFoundException("You can't write the comment, because you didn't booking this item");
         }
 
-        List<Booking> bookingsBefore = bookingsItemByUser.stream()
+        List<Booking> bookingsEndsBeforeNow = bookingsItemByUser.stream()
                 .filter(x -> x.getEnd().isBefore(LocalDateTime.now()))
                 .collect(Collectors.toList());
 
-        if (bookingsBefore.isEmpty()) {
+        if (bookingsEndsBeforeNow.isEmpty()) {
             throw new ValidException("You can't comment, because you didn't use this item");
         }
 
