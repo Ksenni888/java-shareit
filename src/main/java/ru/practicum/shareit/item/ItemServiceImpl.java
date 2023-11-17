@@ -37,6 +37,11 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public Item create(long userId, Item item) {
+
+        if (item.getId() != 0) {
+            log.warn("id must be 0");
+            throw new ValidException("id must be 0");
+        }
         //   checkUser(userId);
 
 //        if (null == item.getAvailable()) {

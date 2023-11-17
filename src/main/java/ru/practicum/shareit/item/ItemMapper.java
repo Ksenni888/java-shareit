@@ -39,13 +39,13 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                //     .request(item.getRequest() != null ? item.getRequest().getId() : 0)
+                .request(item.getRequest() != null ? item.getRequest().getId() : 0)
                 .build();
     }
 
     public Item toItem(ItemDto itemDto, long userId) {
         return Item.builder()
-                .id(itemDto.getId())
+                //.id(itemDto.getId())
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
@@ -104,7 +104,7 @@ public class ItemMapper {
 
     public CommentDto toCommentDto(Item.Comment comment) {
         return CommentDto.builder()
-                .id(comment.getId())
+               .id(comment.getId())
                 .author(comment.getAuthor().getId())
                 .authorName(userRepository.getReferenceById(comment.getAuthor().getId()).getName())
                 .text(comment.getText())
