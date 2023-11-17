@@ -32,11 +32,13 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public Booking createBooking(long userId, BookingDto bookingDto) {
 
-        if (bookingDto.getStart().isAfter(bookingDto.getEnd())) {
+        LocalDateTime saveStartTime = bookingDto.getStart();
+
+        if (saveStartTime.isAfter(bookingDto.getEnd())) {
             throw new ValidException("Data start can't be later then end");
         }
 
-        if (bookingDto.getStart().isEqual(bookingDto.getEnd())) {
+        if (saveStartTime.isEqual(bookingDto.getEnd())) {
             throw new ValidException("Dates start and end can be different");
         }
 
@@ -45,15 +47,17 @@ public class BookingServiceImpl implements BookingService {
             throw new ObjectNotFoundException("This user is not exist");
         }
 
-        if ((itemRepository.findById(bookingDto.getItemId())).isEmpty()) {
+        long saveItemId = bookingDto.getItemId();
+
+        if ((itemRepository.findById(saveItemId)).isEmpty()) {
             throw new ObjectNotFoundException("Item not found");
         }
 
-        if (!(itemRepository.getReferenceById(bookingDto.getItemId())).getAvailable()) {
+        if (!(itemRepository.getReferenceById(saveItemId)).getAvailable()) {
             throw new ValidException("Item is not available");
         }
 
-        if ((itemRepository.getReferenceById(bookingDto.getItemId())).getOwner().getId() == userId) {
+        if ((itemRepository.getReferenceById(saveItemId)).getOwner().getId() == userId) {
             throw new ObjectNotFoundException("You can't send request for your item");
         }
 
@@ -117,15 +121,15 @@ public class BookingServiceImpl implements BookingService {
             throw new ObjectNotFoundException("This booking not found");
         }
 
-        Booking booking = bookingRepository.getReferenceById(bookingId);
+        Booking saveBooking = bookingRepository.getReferenceById(bookingId);
 
-        if ((booking).getBooker().getId() != userId
-                && (((booking).getItem().getOwner().getId()) != userId)) {
+        if ((saveBooking).getBooker().getId() != userId
+                && (((saveBooking).getItem().getOwner().getId()) != userId)) {
             throw new ObjectNotFoundException("Get information about booking can owner item or booker only");
         }
 
-        return bookingMapper.toBooking((booking).getBooker().getId(),
-                bookingMapper.toDto(booking));
+        return bookingMapper.toBooking((saveBooking).getBooker().getId(),
+                bookingMapper.toDto(saveBooking));
     }
 
     public List<Booking> getBookingsByStatus(long userId, String state) {

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidException;
 import ru.practicum.shareit.item.model.Item;
@@ -15,7 +14,6 @@ import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,13 +22,9 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
     private static final Logger log = LoggerFactory.getLogger(ItemServiceImpl.class);
-
     private final ItemRepository itemRepository;
-
     private final UserRepository userRepository;
-
     private final BookingRepository bookingRepository;
-
     private final CommentRepository commentRepository;
 
     @Override
@@ -53,14 +47,13 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public Item update(long userId, Item item, long itemId) {
-        //   checkUser(userId);
 
         if (!itemRepository.existsById(itemId)) {
             throw new ObjectNotFoundException("This item not found");
         }
 
-        //  Item savedItem = itemRepository.findById(itemId).orElseThrow();
-        Item savedItem = itemRepository.getReferenceById(itemId); //new
+        Item savedItem = itemRepository.getReferenceById(itemId);
+
         if (item.getAvailable() != null) {
             savedItem.setAvailable(item.getAvailable());
         }
@@ -92,7 +85,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> getItemsByUserId(long userId) {
-        //  checkUser(userId);
+
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
         }
@@ -136,29 +129,5 @@ public class ItemServiceImpl implements ItemService {
         comment.setCreated(LocalDateTime.now());
 
         return commentRepository.save(comment);
-    }
-
-    public void checkUser(long userId) {
-        if (userId == 0) {
-            log.warn("User id can't be empty");
-            throw new ValidException("User id can't be empty");
-        }
-    }
-
-    public Booking findByItem_id(long itemId) {
-
-        List<Booking> bookingByItemId = bookingRepository.findByItem_id(itemId)
-                .stream()
-                .filter(x -> x.getStatus().equals(BookingStatus.APPROVED))
-                .sorted(Comparator.comparing(Booking::getStart))
-                .collect(Collectors.toList());
-
-        if (bookingByItemId.isEmpty()) {
-            return null;
-        } else if (bookingByItemId.size() < 2) {
-            return bookingByItemId.get(0);
-        }
-
-        return bookingByItemId.get(0);
     }
 }

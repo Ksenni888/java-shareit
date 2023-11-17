@@ -34,15 +34,12 @@ public class Item {
     private long id;
 
     @Column(name = "item_name")
-    //  @NotBlank
     private String name;
 
     @Column(name = "description", length = 512)
-    //  @NotBlank
     private String description;
 
     @Column(name = "is_available")
-    //   @NotNull
     private Boolean available;
 
     @ManyToOne
