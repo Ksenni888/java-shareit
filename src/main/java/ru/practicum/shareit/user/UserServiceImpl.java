@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.HibernateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             return userMapper.toDto(userRepository.save(user));
-        } catch (Exception e) {
+        } catch (HibernateException ex) {
             throw new ExistExeption("Email can't be the same");
         }
     }
