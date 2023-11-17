@@ -53,13 +53,13 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public Item update(long userId, Item item, long itemId) {
-     //   checkUser(userId);
+        //   checkUser(userId);
 
         if (!itemRepository.existsById(itemId)) {
             throw new ObjectNotFoundException("This item not found");
         }
 
-      //  Item savedItem = itemRepository.findById(itemId).orElseThrow();
+        //  Item savedItem = itemRepository.findById(itemId).orElseThrow();
         Item savedItem = itemRepository.getReferenceById(itemId); //new
         if (item.getAvailable() != null) {
             savedItem.setAvailable(item.getAvailable());
@@ -92,7 +92,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> getItemsByUserId(long userId) {
-      //  checkUser(userId);
+        //  checkUser(userId);
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
         }
