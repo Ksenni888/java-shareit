@@ -21,6 +21,7 @@ target/
 *.class
 *.jar
 *.DS_Store
+*.log
 
 ### NetBeans ###
 /nbproject/private/
