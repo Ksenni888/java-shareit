@@ -64,17 +64,14 @@ public class ItemServiceImpl implements ItemService {
 
         if (item.getAvailable() != null) {
             savedItem.setAvailable(item.getAvailable());
-         //   itemRepository.save(savedItem);
         }
 
         if (item.getName() != null) {
             savedItem.setName(item.getName());
-         //   itemRepository.save(savedItem);
         }
 
         if (item.getDescription() != null) {
             savedItem.setDescription(item.getDescription());
-         //   itemRepository.save(savedItem);
         }
 
         if (savedItem.getOwner().getId() != userId) {
@@ -90,6 +87,7 @@ public class ItemServiceImpl implements ItemService {
         if (!itemRepository.existsById(itemId)) {
             throw new ObjectNotFoundException("Item not found");
         }
+
         return itemRepository.getReferenceById(itemId);
     }
 
@@ -108,6 +106,7 @@ public class ItemServiceImpl implements ItemService {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
+
         return itemRepository.search(text).stream()
                 .filter(Item::getAvailable)
                 .collect(Collectors.toList());

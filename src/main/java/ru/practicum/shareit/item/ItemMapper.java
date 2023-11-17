@@ -10,6 +10,7 @@ import ru.practicum.shareit.item.dto.ItemDto2;
 import ru.practicum.shareit.item.model.CommentDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestService;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 
@@ -44,13 +45,14 @@ public class ItemMapper {
     }
 
     public Item toItem(ItemDto itemDto, long userId) {
+        User saveUser = userRepository.getReferenceById(userId);
         return Item.builder()
                 //.id(itemDto.getId())
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
                 .request(itemDto.getRequest() != 0 ? itemRequestService.findRequestById(itemDto.getRequest(), userId) : null)
-                .owner(userService.getById(userId) != null ? userService.getById(userId) : null)
+                .owner(userRepository.existsById(userId) ? saveUser : null) //new
                 .build();
     }
 

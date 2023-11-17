@@ -31,17 +31,6 @@ public class UserServiceImpl implements UserService {
             throw new ValidException("id must be 0");
         }
 
-//        if (user.getEmail() == null || user.getEmail().isBlank()) { //new
-//            throw new ValidException("Email can't by empty");
-//        }
-
-//        if (userRepository.findByEmailLike(user.getEmail()) != null) { //new
-//            log.warn("User with email is exist");
-//            throw new ExistExeption("User with email is exist");
-//        }
-// это условие работало в спринте 13
-
-
         try {
             userRepository.save(user);
         } catch (Exception e) {
@@ -55,13 +44,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto update(User user, long userId) {
         checkUserExists(userId);
-
-//        if (userRepository.findByEmailAndId(user.getEmail(), userId) != null) { //new
-//            log.warn("User with email is exist");
-//            throw new ExistExeption("User with email is exist");
-//        }
-// это условие работало в спринте 13
-
 
         User saveUser = userRepository.findById(userId).orElseThrow();
         if (user.getEmail() != null) {
