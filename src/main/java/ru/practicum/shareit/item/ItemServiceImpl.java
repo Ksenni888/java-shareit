@@ -10,7 +10,6 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidException;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -33,6 +32,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
 
     private final CommentRepository commentRepository;
+    private final ItemMapper itemMapper;
 
     @Override
     @Transactional
@@ -42,25 +42,7 @@ public class ItemServiceImpl implements ItemService {
             log.warn("id must be 0");
             throw new ValidException("id must be 0");
         }
-        //   checkUser(userId);
 
-//        if (null == item.getAvailable()) {
-//            log.warn("Available can't be empty");
-//            throw new ValidException("Available can't be empty");
-//        }
-//
-//        if (item.getName().isBlank()) {
-//            log.warn("Name can't be empty");
-//            throw new ValidException("Name can't be empty");
-//        }
-//
-//        if (null == item.getDescription()) {
-//            log.warn("Description can't be empty");
-//            throw new ValidException("Description can't be empty");
-//        }
-//boolean owner = userRepository.existsById(userId);
-
-        //  if (!userRepository.existsById(userId)) {
         if (item.getOwner() == null) {
             log.warn("This user is not exist");
             throw new ObjectNotFoundException("This user is not exist");
@@ -71,7 +53,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item update(long userId, ItemDto itemDto, long itemId) {
+    public Item update(long userId, Item item, long itemId) {
         checkUser(userId);
 
         if (!itemRepository.existsById(itemId)) {
@@ -80,16 +62,19 @@ public class ItemServiceImpl implements ItemService {
 
         Item savedItem = itemRepository.findById(itemId).orElseThrow();
 
-        if (itemDto.getAvailable() != null) {
-            savedItem.setAvailable(itemDto.getAvailable());
+        if (item.getAvailable() != null) {
+            savedItem.setAvailable(item.getAvailable());
+            itemRepository.save(savedItem);
         }
 
-        if (itemDto.getName() != null) {
-            savedItem.setName(itemDto.getName());
+        if (item.getName() != null) {
+            savedItem.setName(item.getName());
+            itemRepository.save(savedItem);
         }
 
-        if (itemDto.getDescription() != null) {
-            savedItem.setDescription(itemDto.getDescription());
+        if (item.getDescription() != null) {
+            savedItem.setDescription(item.getDescription());
+            itemRepository.save(savedItem);
         }
 
         if (savedItem.getOwner().getId() != userId) {

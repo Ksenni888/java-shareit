@@ -37,7 +37,7 @@ public class UserController {
     public UserDto update(@Valid @RequestBody User user, @PathVariable long userId) {
         log.info("Update user");
         return userService.update(user, userId);
-                //userMapper.toUser(userDto), userId);
+        //userMapper.toUser(userDto), userId);
     }
 
     @GetMapping

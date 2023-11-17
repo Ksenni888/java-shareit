@@ -104,7 +104,7 @@ public class ItemMapper {
 
     public CommentDto toCommentDto(Item.Comment comment) {
         return CommentDto.builder()
-               .id(comment.getId())
+                .id(comment.getId())
                 .author(comment.getAuthor().getId())
                 .authorName(userRepository.getReferenceById(comment.getAuthor().getId()).getName())
                 .text(comment.getText())

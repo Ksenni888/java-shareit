@@ -17,7 +17,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Getter
@@ -35,15 +34,15 @@ public class Item {
     private long id;
 
     @Column(name = "item_name")
-    @NotBlank
+    //  @NotBlank
     private String name;
 
     @Column(name = "description", length = 512)
-    @NotBlank
+    //  @NotBlank
     private String description;
 
     @Column(name = "is_available")
-    @NotNull
+    //   @NotNull
     private Boolean available;
 
     @ManyToOne
@@ -54,14 +53,14 @@ public class Item {
     @JoinColumn(name = "request_id")
     private ItemRequest request;
 
-@Setter
-@Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table(name = "comments")
-public static class Comment {
+    @Setter
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Entity
+    @Table(name = "comments")
+    public static class Comment {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "comment_id")
