@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exeption.ExistExeption;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -30,11 +31,11 @@ public class UserServiceImpl implements UserService {
             throw new ValidException("id must be 0");
         }
 
-        if (user.getEmail() == null) {
-            throw new ValidException("Email can't by empty");
-        }
+//        if (user.getEmail() == null || user.getEmail().isBlank()) { //new
+//            throw new ValidException("Email can't by empty");
+//        }
 
-//        if (userRepository.findByEmailLike(user.getEmail()) != null) {
+//        if (userRepository.findByEmailLike(user.getEmail()) != null) { //new
 //            log.warn("User with email is exist");
 //            throw new ExistExeption("User with email is exist");
 //        }
@@ -48,10 +49,11 @@ public class UserServiceImpl implements UserService {
     public UserDto update(User user, long userId) {
         checkUserExists(userId);
 
-//        if (userRepository.findByEmailAndId(user.getEmail(), userId) != null) {
+//        if (userRepository.findByEmailAndId(user.getEmail(), userId) != null) { //new
 //            log.warn("User with email is exist");
 //            throw new ExistExeption("User with email is exist");
-//        } //это условие работало в спринте 13
+//        }
+// это условие работало в спринте 13
 
 
     User saveUser = userRepository.findById(userId).orElseThrow();
@@ -63,6 +65,7 @@ public class UserServiceImpl implements UserService {
         if (user.getName() != null) {
             saveUser.setName(user.getName());
         }
+
         return userMapper.toDto(userRepository.save(saveUser));
     }
 

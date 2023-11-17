@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 @Setter
 @Getter
@@ -16,5 +18,6 @@ public class UserDto {
     private String name;
 
     @Email
+    @NotEmpty
     private String email;
 }
