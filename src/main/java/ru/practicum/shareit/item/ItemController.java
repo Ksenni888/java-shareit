@@ -34,10 +34,9 @@ public class ItemController {
     private final ItemMapper itemMapper;
 
     @PostMapping
-    public ItemDto create(@RequestHeader(userIDhead) long userId, @Valid @RequestBody Item item) {
+    public ItemDto create(@RequestHeader(userIDhead) long userId, @Valid @RequestBody ItemDto itemDto) {
         log.info("Create item");
-        return itemMapper.toItemDto(itemService.create(userId, item));
-        //itemMapper.toItem(itemDto, userId)));
+        return itemMapper.toItemDto(itemService.create(userId, itemMapper.toItem(itemDto, userId)));
     }
 
     @PatchMapping("/{itemId}")

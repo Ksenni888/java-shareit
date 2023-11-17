@@ -4,6 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 @Setter
 @Getter
 @Builder
@@ -11,14 +14,14 @@ public class ItemDto {
 
     private long id;
 
- //   @NotBlank
+    @NotBlank
     private String name;
 
- //   @NotBlank
+    @NotBlank
     private String description;
 
- //   @NotNull
+    @NotNull
     private Boolean available;
 
-   // private long request;
+    private long request;
 }

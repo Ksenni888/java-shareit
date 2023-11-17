@@ -39,7 +39,7 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-           //     .request(item.getRequest() != null ? item.getRequest().getId() : 0)
+                //     .request(item.getRequest() != null ? item.getRequest().getId() : 0)
                 .build();
     }
 
@@ -49,7 +49,7 @@ public class ItemMapper {
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
-             //   .request(itemDto.getRequest() != 0 ? itemRequestService.findRequestById(itemDto.getRequest(), userId) : null)
+                .request(itemDto.getRequest() != 0 ? itemRequestService.findRequestById(itemDto.getRequest(), userId) : null)
                 .owner(userService.getById(userId) != null ? userService.getById(userId) : null)
                 .build();
     }
@@ -97,19 +97,19 @@ public class ItemMapper {
                                 .end(nextBooking.getEnd())
                                 .bookerId(nextBooking.getBooker().getId())
                                 .build() : null
-                               )
+                )
                 .comments(comments)
                 .build();
     }
 
     public CommentDto toCommentDto(Item.Comment comment) {
-      return  CommentDto.builder()
-                        .id(comment.getId())
-                        .author(comment.getAuthor().getId())
-                        .authorName(userRepository.getReferenceById(comment.getAuthor().getId()).getName())
-                        .text(comment.getText())
-                        .created(comment.getCreated())
-                        .build();
+        return CommentDto.builder()
+                .id(comment.getId())
+                .author(comment.getAuthor().getId())
+                .authorName(userRepository.getReferenceById(comment.getAuthor().getId()).getName())
+                .text(comment.getText())
+                .created(comment.getCreated())
+                .build();
 
     }
 }
