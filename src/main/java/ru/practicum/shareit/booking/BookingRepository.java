@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface BookingRepository extends JpaRepository <Booking, Long>{
+public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByBooker_id(long userId);
 
     List<Booking> findByItem_id(long itemId);
@@ -14,5 +14,4 @@ public interface BookingRepository extends JpaRepository <Booking, Long>{
     List<Booking> findByItem_idAndStatus(long itemId, BookingStatus status);
 
     List<Booking> findByBooker_idAndItem_id(long userId, long itemId);
-
 }

@@ -57,7 +57,7 @@ public class ItemMapper {
     public ItemDto2 toItemDto2(Item item, long userId) {
 
         Booking lastBooking = bookingRepository.findByItem_idAndStatus(item.getId(), BookingStatus.APPROVED).stream()
-                .filter(x -> x.getEnd().isBefore(LocalDateTime.now()) || ((x.getStart().isBefore(LocalDateTime.now()))&&(x.getEnd().isAfter(LocalDateTime.now()))))
+                .filter(x -> x.getEnd().isBefore(LocalDateTime.now()) || ((x.getStart().isBefore(LocalDateTime.now())) && (x.getEnd().isAfter(LocalDateTime.now()))))
                 .max((Comparator.comparing(Booking::getEnd)))
                 .orElse(null);
         Booking nextBooking = bookingRepository.findByItem_idAndStatus(item.getId(), BookingStatus.APPROVED).stream()
@@ -66,7 +66,7 @@ public class ItemMapper {
                 .orElse(null);
 
         List<ItemDto2.Comment> comments = commentRepository.findByItem_id(item.getId()).stream()
-                .map(x->ItemDto2.Comment.builder()
+                .map(x -> ItemDto2.Comment.builder()
                         .id(x.getId())
                         .author(x.getAuthor().getId())
                         .authorName(x.getAuthor().getName())
@@ -98,7 +98,7 @@ public class ItemMapper {
                                 .bookerId(nextBooking.getBooker().getId())
                                 .build() : null
                                )
-                .comments( comments )
+                .comments(comments)
                 .build();
     }
 
