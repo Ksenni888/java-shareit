@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDto2;
 import ru.practicum.shareit.item.model.CommentDto;
@@ -39,7 +40,7 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                .request(item.getRequest() != null ? item.getRequest().getId() : 0)
+           //     .request(item.getRequest() != null ? item.getRequest().getId() : 0)
                 .build();
     }
 
@@ -49,7 +50,7 @@ public class ItemMapper {
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
-                .request(itemDto.getRequest() != 0 ? itemRequestService.findRequestById(itemDto.getRequest(), userId) : null)
+             //   .request(itemDto.getRequest() != 0 ? itemRequestService.findRequestById(itemDto.getRequest(), userId) : null)
                 .owner(userService.getById(userId) != null ? userService.getById(userId) : null)
                 .build();
     }

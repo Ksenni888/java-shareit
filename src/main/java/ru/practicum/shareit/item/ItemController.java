@@ -35,15 +35,17 @@ public class ItemController {
     private final ItemMapper itemMapper;
 
     @PostMapping
-    public ItemDto create(@RequestHeader(userIDhead) long userId, @Valid @RequestBody ItemDto itemDto) {
+    public ItemDto create(@RequestHeader(userIDhead) long userId, @Valid @RequestBody Item item) {
         log.info("Create item");
-        return itemMapper.toItemDto(itemService.create(userId, itemMapper.toItem(itemDto, userId)));
+        return itemMapper.toItemDto(itemService.create(userId, item));
+                //itemMapper.toItem(itemDto, userId)));
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto update(@RequestHeader(userIDhead) long userId, @RequestBody ItemDto itemDto, @PathVariable long itemId) {
         log.info("Update item");
-        return itemMapper.toItemDto(itemService.update(userId, itemMapper.toItem(itemDto, userId), itemId));
+        return itemMapper.toItemDto(itemService.update(userId, itemDto, itemId));
+                //itemMapper.toItem(itemDto, userId), itemId));
     }
 
     @GetMapping("/{itemId}")
