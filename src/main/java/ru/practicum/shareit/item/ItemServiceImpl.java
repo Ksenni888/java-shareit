@@ -64,17 +64,17 @@ public class ItemServiceImpl implements ItemService {
 
         if (item.getAvailable() != null) {
             savedItem.setAvailable(item.getAvailable());
-            itemRepository.save(savedItem);
+         //   itemRepository.save(savedItem);
         }
 
         if (item.getName() != null) {
             savedItem.setName(item.getName());
-            itemRepository.save(savedItem);
+         //   itemRepository.save(savedItem);
         }
 
         if (item.getDescription() != null) {
             savedItem.setDescription(item.getDescription());
-            itemRepository.save(savedItem);
+         //   itemRepository.save(savedItem);
         }
 
         if (savedItem.getOwner().getId() != userId) {
