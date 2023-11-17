@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exeption.ExistExeption;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -40,7 +41,15 @@ public class UserServiceImpl implements UserService {
 //        }
 // это условие работало в спринте 13
 
+
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new ExistExeption("Email can't be the same");
+        }
+
         return userMapper.toDto(userRepository.save(user));
+
     }
 
     @Override
@@ -55,8 +64,7 @@ public class UserServiceImpl implements UserService {
 // это условие работало в спринте 13
 
 
-    User saveUser = userRepository.findById(userId).orElseThrow();
-        System.out.println(userId);
+        User saveUser = userRepository.findById(userId).orElseThrow();
         if (user.getEmail() != null) {
             saveUser.setEmail(user.getEmail());
         }
@@ -77,8 +85,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getById(long userId) {
-       checkUserExists(userId);
-       return userRepository.findById(userId).orElseThrow();
+        checkUserExists(userId);
+        return userRepository.findById(userId).orElseThrow();
     }
 
     @Override
