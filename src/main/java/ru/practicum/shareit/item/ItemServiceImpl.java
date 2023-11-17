@@ -38,7 +38,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public Item create(long userId, Item item) {
-     //   checkUser(userId);
+        //   checkUser(userId);
 
 //        if (null == item.getAvailable()) {
 //            log.warn("Available can't be empty");
@@ -56,13 +56,13 @@ public class ItemServiceImpl implements ItemService {
 //        }
 //boolean owner = userRepository.existsById(userId);
 
-  if (!userRepository.existsById(userId)) {
-      //  if (item.getOwner() == null) {
+        if (!userRepository.existsById(userId)) {
+            //  if (item.getOwner() == null) {
             log.warn("This user is not exist");
             throw new ObjectNotFoundException("This user is not exist");
         }
 
-       item.setOwner(userRepository.getReferenceById(userId));
+        item.setOwner(userRepository.getReferenceById(userId));
         return itemRepository.save(item);
     }
 

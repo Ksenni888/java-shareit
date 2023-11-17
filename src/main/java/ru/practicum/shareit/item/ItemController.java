@@ -19,7 +19,6 @@ import ru.practicum.shareit.item.model.CommentDto;
 import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.Valid;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,14 +37,14 @@ public class ItemController {
     public ItemDto create(@RequestHeader(userIDhead) long userId, @Valid @RequestBody Item item) {
         log.info("Create item");
         return itemMapper.toItemDto(itemService.create(userId, item));
-                //itemMapper.toItem(itemDto, userId)));
+        //itemMapper.toItem(itemDto, userId)));
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto update(@RequestHeader(userIDhead) long userId, @RequestBody ItemDto itemDto, @PathVariable long itemId) {
         log.info("Update item");
         return itemMapper.toItemDto(itemService.update(userId, itemDto, itemId));
-                //itemMapper.toItem(itemDto, userId), itemId));
+        //itemMapper.toItem(itemDto, userId), itemId));
     }
 
     @GetMapping("/{itemId}")
