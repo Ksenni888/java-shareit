@@ -27,34 +27,34 @@ import java.util.stream.Collectors;
 @RequestMapping("/items")
 public class ItemController {
     private static final Logger log = LoggerFactory.getLogger(ItemController.class);
-    private final String userIDhead = "X-Sharer-User-Id";
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     private final ItemService itemService;
 
     private final ItemMapper itemMapper;
 
     @PostMapping
-    public ItemDto create(@RequestHeader(userIDhead) long userId, @Valid @RequestBody ItemDto itemDto) {
+    public ItemDto create(@RequestHeader(USER_ID_HEADER) long userId, @Valid @RequestBody ItemDto itemDto) {
         log.info("Create item");
         return itemMapper.toItemDto(itemService.create(userId, itemMapper.toItem(itemDto, userId)));
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@RequestHeader(userIDhead) long userId, @RequestBody Item item, @PathVariable long itemId) {
+    public ItemDto update(@RequestHeader(USER_ID_HEADER) long userId, @RequestBody Item item, @PathVariable long itemId) {
         log.info("Update item");
 
         return itemMapper.toItemDto(itemService.update(userId, item, itemId));
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto2 findById(@RequestHeader(userIDhead) long userId, @PathVariable long itemId) {
+    public ItemDto2 findById(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long itemId) {
         log.info("Get information about item");
         Item item = itemService.findById(itemId);
         return itemMapper.toItemDto2(itemService.findById(itemId), userId);
     }
 
     @GetMapping
-    public List<ItemDto2> getItemsByUserId(@RequestHeader(userIDhead) long userId) {
+    public List<ItemDto2> getItemsByUserId(@RequestHeader(USER_ID_HEADER) long userId) {
         log.info("Get all user's items");
         return itemService.getItemsByUserId(userId).stream()
                 .map(x -> itemMapper.toItemDto2(x, userId))
@@ -63,7 +63,7 @@ public class ItemController {
 
     @GetMapping("/search")
     @ResponseBody
-    public List<ItemDto> findItems(@RequestHeader(userIDhead) long userId, @RequestParam String text) {
+    public List<ItemDto> findItems(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam String text) {
         log.info("Seach items by request with available status");
         return itemService.findItems(text).stream()
                 .map(itemMapper::toItemDto)
@@ -72,7 +72,7 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     @ResponseBody
-    public CommentDto addComment(@RequestHeader(userIDhead) long userId, @PathVariable long itemId, @RequestBody Item.Comment comment) {
+    public CommentDto addComment(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long itemId, @RequestBody Item.Comment comment) {
         return itemMapper.toCommentDto(itemService.addComment(userId, itemId, comment));
     }
 }

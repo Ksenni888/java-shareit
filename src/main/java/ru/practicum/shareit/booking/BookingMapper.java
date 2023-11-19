@@ -3,7 +3,9 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
 
 @Component
@@ -11,25 +13,34 @@ import ru.practicum.shareit.user.UserService;
 public class BookingMapper {
     private final UserService userService;
     private final ItemService itemService;
+    private final ItemMapper itemMapper;
+    private final UserMapper userMapper;
 
-    public BookingDto toDto(Booking booking) {
-        return BookingDto.builder()
-                .id(booking.getId())
-                .start(booking.getStart())
-                .end(booking.getEnd())
-                .itemId(booking.getItem().getId())
-                .status(booking.getStatus())
-                .build();
-    }
+//    public Booking toBooking(Booking booking) {
+//        return Booking.builder()
+//                .id(booking.getId())
+//                .start(booking.getStart())
+//                .end(booking.getEnd())
+//                .item(booking.getItem())
+//                .booker(booking.getBooker())
+//                .status(booking.getStatus())
+//                .build();
+//    }
 
-    public Booking toBooking(long userId, BookingDto bookingDto) {
-        return Booking.builder()
-                .id(bookingDto.getId())
-                .start(bookingDto.getStart())
-                .end(bookingDto.getEnd())
-                .item(itemService.findById(bookingDto.getItemId()))
-                .booker(userService.getById(userId))
-                .status(bookingDto.getStatus())
-                .build();
-    }
+//    public Booking toBooking(long userId, BookingDto bookingDto) {
+//
+//        return Booking.builder()
+//                .id(bookingDto.getId())
+//                .start(bookingDto.getStart())
+//                .end(bookingDto.getEnd())
+//               .item(
+//                   //  itemMapper.toItemDto2(
+//
+//                       //bookingDto.getItemId() != 0 ? bookingDto.getItemId() : 0) //itemMapper.toItem(bookingDto.getItemId(), userId))
+//                       itemService.findById(bookingDto.getItemId()))
+//                .booker(
+//                       userService.getById(userId))
+//                .status(bookingDto.getStatus())
+//                .build();
+//    }
 }

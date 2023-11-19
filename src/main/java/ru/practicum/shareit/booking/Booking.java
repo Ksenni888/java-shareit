@@ -19,6 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -47,14 +48,16 @@ public class Booking {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    @NotNull
+  //  @NotNull
     private User booker;
 
     @Enumerated(value = EnumType.STRING)
     @JoinColumn(name = "status")
     private BookingStatus status;
+
+//    @Transient
+//    private long itemId;
+//    @Transient
+//    private long bookerId;
+
 }
-
-
-
-

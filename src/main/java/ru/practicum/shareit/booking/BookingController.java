@@ -22,36 +22,36 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 public class BookingController {
     private static final Logger log = LoggerFactory.getLogger(BookingController.class);
-    private final String userIDhead = "X-Sharer-User-Id";
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     private final BookingService bookingService;
 
     @PostMapping
-    public Booking createBooking(@RequestHeader(userIDhead) long userId, @Valid @RequestBody BookingDto bookingDto) {
+    public Booking createBooking(@RequestHeader(USER_ID_HEADER) long userId, @Valid @RequestBody BookingDto bookingDto) {
         log.info("Create booking");
         return bookingService.createBooking(userId, bookingDto);
     }
 
     @GetMapping("/{bookingId}")
-    public Booking getBooking(@RequestHeader(userIDhead) long userId, @PathVariable long bookingId) {
+    public Booking getBooking(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long bookingId) {
         log.info("Get information by booking for owner item or booker only");
         return bookingService.getBooking(userId, bookingId);
     }
 
     @PatchMapping("/{bookingId}")
-    public Booking checkRequest(@RequestHeader(userIDhead) long userId, @PathVariable long bookingId, @RequestParam String approved) {
+    public Booking checkRequest(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long bookingId, @RequestParam String approved) {
         log.info("Check request booking");
         return bookingService.checkRequest(userId, bookingId, approved);
     }
 
     @GetMapping
-    public List<Booking> getBookingsByStatus(@RequestHeader(userIDhead) long userId, @RequestParam(defaultValue = "ALL") String state) {
+    public List<Booking> getBookingsByStatus(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam(defaultValue = "ALL") String state) {
         log.info("Get list of user's bookings");
         return bookingService.getBookingsByStatus(userId, state);
     }
 
     @GetMapping("/owner")
-    public List<Booking> getUserBookings(@RequestHeader(userIDhead) long userId, @RequestParam(defaultValue = "ALL") String state) {
+    public List<Booking> getUserBookings(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam(defaultValue = "ALL") String state) {
         return bookingService.getUserBookings(userId, state);
     }
 }

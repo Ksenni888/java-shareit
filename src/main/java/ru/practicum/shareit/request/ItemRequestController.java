@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ItemRequestController {
     private static final Logger log = LoggerFactory.getLogger(ItemRequestController.class);
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     private final ItemRequestService itemRequestService;
 
     @GetMapping("/{requestId}")
-    public ItemRequest findRequestById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long requestId) {
+    public ItemRequest findRequestById(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long requestId) {
         return itemRequestService.findRequestById(userId, requestId);
     }
 }

@@ -48,6 +48,4 @@ public class ItemDto2 {
        private String authorName;
        private LocalDateTime created;
    }
-
-
 }

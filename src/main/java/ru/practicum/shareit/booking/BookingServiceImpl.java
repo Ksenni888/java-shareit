@@ -25,11 +25,11 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
     private static final Logger log = LoggerFactory.getLogger(BookingServiceImpl.class);
     private final BookingRepository bookingRepository;
-    private final BookingMapper bookingMapper;
+  //  private final BookingMapper bookingMapper;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Booking createBooking(long userId, BookingDto bookingDto) {
 
         LocalDateTime saveStartTime = bookingDto.getStart();
@@ -49,7 +49,7 @@ public class BookingServiceImpl implements BookingService {
 
         long saveItemId = bookingDto.getItemId();
 
-        if ((itemRepository.findById(saveItemId)).isEmpty()) {
+        if (itemRepository.findById(saveItemId).isEmpty()) {
             throw new ObjectNotFoundException("Item not found");
         }
 
@@ -58,18 +58,27 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if ((itemRepository.getReferenceById(saveItemId)).getOwner().getId() == userId) {
+
             throw new ObjectNotFoundException("You can't send request for your item");
         }
 
-        bookingDto.setStatus(BookingStatus.WAITING);
+        Booking saveBooking = new Booking();
+        saveBooking.setId(bookingDto.getId());
+        saveBooking.setStart(bookingDto.getStart());
+        saveBooking.setEnd(bookingDto.getEnd());
+        saveBooking.setItem(itemRepository.findById(bookingDto.getItemId()).orElseThrow());
+        saveBooking.setBooker(userRepository.findById(userId).orElseThrow());
+        saveBooking.setStatus(BookingStatus.WAITING);
 
-        return bookingRepository.save(bookingMapper.toBooking(userId, bookingDto));
+        return bookingRepository.save(saveBooking);
     }
 
     @Transactional
     public Booking checkRequest(long userId, long bookingId, String approved) {
 
-        Booking saveBooking = bookingRepository.getReferenceById(bookingId);
+        Booking saveBooking = bookingRepository.findById(bookingId).orElseThrow();
+        saveBooking.setBooker(userRepository.getReferenceById(saveBooking.getBooker().getId()));
+        saveBooking.setItem(itemRepository.getReferenceById(saveBooking.getItem().getId()));
 
         if (approved.isBlank()) {
             throw new ValidException("approved must be true/false");
@@ -102,11 +111,12 @@ public class BookingServiceImpl implements BookingService {
                     saveBooking.setStatus(BookingStatus.WAITING);
                 }
                 saveBooking.setStatus(BookingStatus.APPROVED);
-                return bookingMapper.toBooking(bookingRepository.getReferenceById(bookingId).getBooker().getId(), bookingMapper.toDto(saveBooking));
+
+                return saveBooking;
 
             case "false":
                 saveBooking.setStatus(BookingStatus.REJECTED);
-                return bookingMapper.toBooking(bookingRepository.getReferenceById(bookingId).getBooker().getId(), bookingMapper.toDto(saveBooking));
+                return saveBooking;
 
             default:
                 throw new ValidException("Approved must be true or false");
@@ -121,15 +131,14 @@ public class BookingServiceImpl implements BookingService {
             throw new ObjectNotFoundException("This booking not found");
         }
 
-        Booking saveBooking = bookingRepository.getReferenceById(bookingId);
+        Booking saveBooking = bookingRepository.findById(bookingId).orElseThrow();
 
         if ((saveBooking).getBooker().getId() != userId
                 && (((saveBooking).getItem().getOwner().getId()) != userId)) {
             throw new ObjectNotFoundException("Get information about booking can owner item or booker only");
         }
 
-        return bookingMapper.toBooking((saveBooking).getBooker().getId(),
-                bookingMapper.toDto(saveBooking));
+        return saveBooking;
     }
 
     public List<Booking> getBookingsByStatus(long userId, String state) {
@@ -141,7 +150,6 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookingsByUserId = bookingRepository.findByBooker_id(userId);
         return checkState(bookingsByUserId, state);
     }
-
 
     public List<Booking> getUserBookings(long ownerId, String state) {
 
