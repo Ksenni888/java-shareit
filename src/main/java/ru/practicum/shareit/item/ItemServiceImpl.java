@@ -7,13 +7,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidException;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDto2;
+import ru.practicum.shareit.item.model.Comments;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,21 +32,34 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemMapper itemMapper;
+
 
     @Override
     @Transactional
-    public Item create(long userId, Item item) {
+    public Item create(long userId, ItemDto itemDto) {
 
-        if (item.getId() != 0) {
+        if (itemDto.getId() != 0) {
             log.warn("id must be 0");
             throw new ValidException("id must be 0");
         }
 
-        if (item.getOwner() == null) {
+        if (userId == 0) {
             log.warn("This user is not exist");
             throw new ObjectNotFoundException("This user is not exist");
         }
 
+        if (!userRepository.existsById(userId)) {
+            throw new ObjectNotFoundException("This user not found");
+        }
+
+        Item item = new Item();
+        item.setId(itemDto.getId());
+        item.setName(itemDto.getName());
+        item.setDescription(itemDto.getDescription());
+        item.setAvailable(itemDto.getAvailable());
+        item.setOwner(userRepository.findById(userId).orElseThrow());
+        item.setRequest(item.getRequest());
         return itemRepository.save(item);
     }
 
@@ -74,23 +93,46 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item findById(long itemId) {
+    public ItemDto2 findById(long itemId, long userId) {
 
         if (!itemRepository.existsById(itemId)) {
             throw new ObjectNotFoundException("Item not found");
         }
 
-        return itemRepository.getReferenceById(itemId);
+        List<Booking> saveBookings = bookingRepository.findByItemIdAndStatus(itemId, BookingStatus.APPROVED);
+
+        Booking lastBooking = saveBookings.stream()
+                .filter(x -> x.getEnd().isBefore(LocalDateTime.now()) ||
+                        ((x.getStart().isBefore(LocalDateTime.now())) && (x.getEnd().isAfter(LocalDateTime.now()))))
+                .max((Comparator.comparing(Booking::getEnd))).orElse(null);
+
+        Booking nextBooking = saveBookings.stream()
+                .filter(x -> x.getStart().isAfter(LocalDateTime.now()))
+                .min((Comparator.comparing(Booking::getStart))).orElse(null);
+
+        List<ItemDto2.Comment> comments = commentRepository.findByItem_id(itemId).stream()
+                .map(x -> ItemDto2.Comment.builder()
+                        .id(x.getId())
+                        .author(x.getAuthor().getId())
+                        .authorName(x.getAuthor().getName())
+                        .text(x.getText())
+                        .created(x.getCreated())
+                        .build())
+                .collect(Collectors.toList());
+
+        return itemMapper.toItemDto2(itemRepository.getReferenceById(itemId), userId, lastBooking, nextBooking, comments);
     }
 
     @Override
-    public List<Item> getItemsByUserId(long userId) {
+    public List<ItemDto2> getItemsByUserId(long userId) {
 
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
         }
 
-        return itemRepository.findByOwner_id(userId);
+        return itemRepository.findByOwner_id(userId).stream()
+                .map(x -> findById(x.getId(), userId))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -105,12 +147,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item.Comment addComment(long userId, long itemId, Item.Comment comment) {
-        if (comment.getText().isBlank()) {
+    public Comments addComment(long userId, long itemId, CommentDto commentDto) {
+
+        if (commentDto.getText().isBlank()) {
             throw new ValidException("This field can't be empty, write the text");
         }
 
-        List<Booking> bookingsItemByUser = bookingRepository.findByBooker_idAndItem_id(userId, itemId);
+        List<Booking> bookingsItemByUser = bookingRepository.findByBookerIdAndItem_id(userId, itemId);
 
         if (bookingsItemByUser.isEmpty()) {
             throw new ObjectNotFoundException("You can't write the comment, because you didn't booking this item");
@@ -124,10 +167,12 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidException("You can't comment, because you didn't use this item");
         }
 
-        comment.setAuthor(userRepository.getReferenceById(userId));
-        comment.setItem(itemRepository.getReferenceById(itemId));
-        comment.setCreated(LocalDateTime.now());
+        Comments comments = new Comments();
+        comments.setAuthor(userRepository.getReferenceById(userId));
+        comments.setText(commentDto.getText());
+        comments.setItem(itemRepository.getReferenceById(itemId));
+        comments.setCreated(LocalDateTime.now());
 
-        return commentRepository.save(comment);
+        return commentRepository.save(comments);
     }
 }

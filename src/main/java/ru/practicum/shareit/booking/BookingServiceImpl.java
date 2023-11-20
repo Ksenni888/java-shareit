@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
     private static final Logger log = LoggerFactory.getLogger(BookingServiceImpl.class);
     private final BookingRepository bookingRepository;
-  //  private final BookingMapper bookingMapper;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
@@ -147,7 +146,7 @@ public class BookingServiceImpl implements BookingService {
             throw new ObjectNotFoundException("This user not exist");
         }
 
-        List<Booking> bookingsByUserId = bookingRepository.findByBooker_id(userId);
+        List<Booking> bookingsByUserId = bookingRepository.findByBookerId(userId);
         return checkState(bookingsByUserId, state);
     }
 
@@ -157,7 +156,7 @@ public class BookingServiceImpl implements BookingService {
             List<Long> allItemsByUser = itemRepository.findByOwner_id(ownerId).stream()
                     .map(Item::getId)
                     .collect(Collectors.toList());
-            List<Booking> saveBooking = bookingRepository.findByItem_idIn(allItemsByUser);
+            List<Booking> saveBooking = bookingRepository.findByItemIdIn(allItemsByUser);
 
             return checkState(saveBooking, state);
 

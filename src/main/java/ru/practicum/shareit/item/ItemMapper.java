@@ -3,32 +3,17 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDto2;
-import ru.practicum.shareit.item.model.CommentDto;
+import ru.practicum.shareit.item.model.Comments;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.ItemRequestService;
-import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserRepository;
 
-import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class ItemMapper {
-
-    private final UserRepository userRepository;
-
-    private final ItemRequestService itemRequestService;
-
-    private final BookingRepository bookingRepository;
-
-    private final CommentRepository commentRepository;
 
     public ItemDto toItemDto(Item item) {
 
@@ -41,40 +26,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public Item toItem(ItemDto itemDto, long userId) {
-        User saveUser = userRepository.getReferenceById(userId);
-        return Item.builder()
-                .name(itemDto.getName())
-                .description(itemDto.getDescription())
-                .available(itemDto.getAvailable())
-                .request(itemDto.getRequest() != 0 ? itemRequestService.findRequestById(itemDto.getRequest(), userId) : null)
-                .owner(userRepository.existsById(userId) ? saveUser : null)
-                .build();
-    }
-
-    public ItemDto2 toItemDto2(Item item, long userId) {
-
-        List<Booking> saveBookings = bookingRepository.findByItem_idAndStatus(item.getId(), BookingStatus.APPROVED);
-
-        Booking lastBooking = saveBookings.stream()
-                .filter(x -> x.getEnd().isBefore(LocalDateTime.now()) || ((x.getStart().isBefore(LocalDateTime.now())) && (x.getEnd().isAfter(LocalDateTime.now()))))
-                .max((Comparator.comparing(Booking::getEnd)))
-                .orElse(null);
-
-        Booking nextBooking = saveBookings.stream()
-                .filter(x -> x.getStart().isAfter(LocalDateTime.now()))
-                .min((Comparator.comparing(Booking::getStart)))
-                .orElse(null);
-
-        List<ItemDto2.Comment> comments = commentRepository.findByItem_id(item.getId()).stream()
-                .map(x -> ItemDto2.Comment.builder()
-                        .id(x.getId())
-                        .author(x.getAuthor().getId())
-                        .authorName(x.getAuthor().getName())
-                        .text(x.getText())
-                        .created(x.getCreated())
-                        .build())
-                .collect(Collectors.toList());
+    public ItemDto2 toItemDto2(Item item, long userId, Booking lastBooking, Booking nextBooking, List<ItemDto2.Comment> comments) {
 
         return ItemDto2.builder()
                 .id(item.getId())
@@ -103,13 +55,13 @@ public class ItemMapper {
                 .build();
     }
 
-    public CommentDto toCommentDto(Item.Comment comment) {
+    public CommentDto toCommentDto(Comments comments) {
         return CommentDto.builder()
-                .id(comment.getId())
-                .author(comment.getAuthor().getId())
-                .authorName(userRepository.getReferenceById(comment.getAuthor().getId()).getName())
-                .text(comment.getText())
-                .created(comment.getCreated())
+                .id(comments.getId())
+                .author(comments.getAuthor().getId())
+                .authorName(comments.getAuthor().getName())
+                .text(comments.getText())
+                .created(comments.getCreated())
                 .build();
     }
 }
