@@ -60,6 +60,7 @@ public class ItemServiceImpl implements ItemService {
         item.setAvailable(itemDto.getAvailable());
         item.setOwner(userRepository.findById(userId).orElseThrow());
         item.setRequest(item.getRequest());
+
         return itemRepository.save(item);
     }
 
@@ -130,7 +131,7 @@ public class ItemServiceImpl implements ItemService {
             throw new ObjectNotFoundException("User not found");
         }
 
-        return itemRepository.findByOwner_id(userId).stream()
+        return itemRepository.findByOwnerId(userId).stream()
                 .map(x -> findById(x.getId(), userId))
                 .collect(Collectors.toList());
     }
@@ -153,7 +154,7 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidException("This field can't be empty, write the text");
         }
 
-        List<Booking> bookingsItemByUser = bookingRepository.findByBookerIdAndItem_id(userId, itemId);
+        List<Booking> bookingsItemByUser = bookingRepository.findByBookerIdAndItemId(userId, itemId);
 
         if (bookingsItemByUser.isEmpty()) {
             throw new ObjectNotFoundException("You can't write the comment, because you didn't booking this item");

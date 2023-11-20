@@ -52,11 +52,13 @@ public class BookingServiceImpl implements BookingService {
             throw new ObjectNotFoundException("Item not found");
         }
 
-        if (!(itemRepository.getReferenceById(saveItemId)).getAvailable()) {
+        Item itemSave = itemRepository.getReferenceById(saveItemId);
+
+        if (!itemSave.getAvailable()) {
             throw new ValidException("Item is not available");
         }
 
-        if ((itemRepository.getReferenceById(saveItemId)).getOwner().getId() == userId) {
+        if (itemSave.getOwner().getId() == userId) {
 
             throw new ObjectNotFoundException("You can't send request for your item");
         }
@@ -106,7 +108,7 @@ public class BookingServiceImpl implements BookingService {
 
         switch (approved) {
             case "true":
-                if (!itemRepository.getReferenceById(saveBooking.getItem().getId()).getAvailable()) {
+                if (!saveBooking.getItem().getAvailable()) {
                     saveBooking.setStatus(BookingStatus.WAITING);
                 }
                 saveBooking.setStatus(BookingStatus.APPROVED);
@@ -132,8 +134,8 @@ public class BookingServiceImpl implements BookingService {
 
         Booking saveBooking = bookingRepository.findById(bookingId).orElseThrow();
 
-        if ((saveBooking).getBooker().getId() != userId
-                && (((saveBooking).getItem().getOwner().getId()) != userId)) {
+        if (saveBooking.getBooker().getId() != userId
+                && (saveBooking.getItem().getOwner().getId() != userId)) {
             throw new ObjectNotFoundException("Get information about booking can owner item or booker only");
         }
 
@@ -152,16 +154,19 @@ public class BookingServiceImpl implements BookingService {
 
     public List<Booking> getUserBookings(long ownerId, String state) {
 
-        if (!itemRepository.findByOwner_id(ownerId).isEmpty()) {
-            List<Long> allItemsByUser = itemRepository.findByOwner_id(ownerId).stream()
-                    .map(Item::getId)
-                    .collect(Collectors.toList());
-            List<Booking> saveBooking = bookingRepository.findByItemIdIn(allItemsByUser);
+        List<Item> itemByOwnerId = itemRepository.findByOwnerId(ownerId);
 
-            return checkState(saveBooking, state);
-
+        if (itemByOwnerId.isEmpty()) {
+            throw new ObjectNotFoundException("This owner haven't any item");
         }
-        throw new ObjectNotFoundException("This owner haven't any item");
+
+        List<Long> allItemsByUser = itemByOwnerId.stream()
+                .map(Item::getId)
+                .collect(Collectors.toList());
+        List<Booking> saveBooking = bookingRepository.findByItemIdIn(allItemsByUser);
+
+        return checkState(saveBooking, state);
+
     }
 
     public List<Booking> checkState(List<Booking> saveBooking, String state) {
