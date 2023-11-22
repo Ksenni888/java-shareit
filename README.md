@@ -8,7 +8,7 @@ Cервис для шеринга (от англ. share — «делиться»
 # Развертывание.
 Клонируйте репозиторий ( ссылка для клонирования: (https://github.com/Ksenni888/java-shareit) и запустите приложение в IntelliJ IDEA. Так как у API пока нет интерфейса, вы можете взаимодействовать с ним через веб-клиент Postman.
 
-#Версии.
+# Версии.
 ![Static Badge](https://img.shields.io/badge/11.0.18%20-%20green?label=java%20version)
 ![Static Badge](https://img.shields.io/badge/2.7.14%20-%20green?label=org.springframework.boot)
 ![Static Badge](https://img.shields.io/badge/1.18.20%20-%20green?label=lombok)
