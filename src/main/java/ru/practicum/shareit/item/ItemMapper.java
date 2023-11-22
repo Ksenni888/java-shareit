@@ -3,7 +3,9 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.dto.BookingDto2;
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentDto2;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDto2;
 import ru.practicum.shareit.item.model.Comments;
@@ -26,7 +28,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public ItemDto2 toItemDto2(Item item, long userId, Booking lastBooking, Booking nextBooking, List<ItemDto2.Comment> comments) {
+    public ItemDto2 toItemDto2(Item item, long userId, Booking lastBooking, Booking nextBooking, List<CommentDto2> comments) {
 
         return ItemDto2.builder()
                 .id(item.getId())
@@ -35,7 +37,7 @@ public class ItemMapper {
                 .available(item.getAvailable())
                 .request(item.getRequest() != null ? item.getRequest().getId() : 0)
                 .lastBooking((lastBooking != null) && (item.getOwner().getId() == userId) ?
-                        ItemDto2.Booking.builder()
+                        BookingDto2.builder()
                                 .id(lastBooking.getId())
                                 .start(lastBooking.getStart())
                                 .end(lastBooking.getEnd())
@@ -44,7 +46,7 @@ public class ItemMapper {
                 )
 
                 .nextBooking((nextBooking != null) && (item.getOwner().getId() == userId) ?
-                        ItemDto2.Booking.builder()
+                        BookingDto2.builder()
                                 .id(nextBooking.getId())
                                 .start(nextBooking.getStart())
                                 .end(nextBooking.getEnd())

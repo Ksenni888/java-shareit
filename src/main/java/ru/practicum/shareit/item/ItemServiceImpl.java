@@ -11,6 +11,7 @@ import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidException;
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentDto2;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDto2;
 import ru.practicum.shareit.item.model.Comments;
@@ -111,8 +112,8 @@ public class ItemServiceImpl implements ItemService {
                 .filter(x -> x.getStart().isAfter(LocalDateTime.now()))
                 .min((Comparator.comparing(Booking::getStart))).orElse(null);
 
-        List<ItemDto2.Comment> comments = commentRepository.findByItem_id(itemId).stream()
-                .map(x -> ItemDto2.Comment.builder()
+        List<CommentDto2> comments = commentRepository.findByItemId(itemId).stream()
+                .map(x -> CommentDto2.builder()
                         .id(x.getId())
                         .author(x.getAuthor().getId())
                         .authorName(x.getAuthor().getName())

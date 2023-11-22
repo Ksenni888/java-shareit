@@ -3,8 +3,8 @@ package ru.practicum.shareit.item.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import ru.practicum.shareit.booking.dto.BookingDto2;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Setter
@@ -22,30 +22,9 @@ public class ItemDto2 {
 
     private long request;
 
-    private Booking lastBooking;
+    private BookingDto2 lastBooking;
 
-    private Booking nextBooking;
+    private BookingDto2 nextBooking;
 
-    private List<Comment> comments;
-
-    @Setter
-    @Getter
-    @Builder
-    public static class Booking {
-    private long id;
-    private LocalDateTime start;
-    private LocalDateTime end;
-    private Long bookerId;
-   }
-
-    @Setter
-    @Getter
-    @Builder
-    public static class Comment {
-       private long id;
-       private String text;
-       private long author;
-       private String authorName;
-       private LocalDateTime created;
-   }
+    private List<CommentDto2> comments;
 }
