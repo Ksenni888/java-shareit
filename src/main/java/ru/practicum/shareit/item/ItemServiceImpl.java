@@ -11,9 +11,10 @@ import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidException;
 import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.CommentDto2;
+
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDto2;
+
+import ru.practicum.shareit.item.dto.ItemDtoForOwners;
 import ru.practicum.shareit.item.model.Comments;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
@@ -95,7 +96,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto2 findById(long itemId, long userId) {
+    public ItemDtoForOwners findById(long itemId, long userId) {
 
         if (!itemRepository.existsById(itemId)) {
             throw new ObjectNotFoundException("Item not found");
@@ -112,8 +113,8 @@ public class ItemServiceImpl implements ItemService {
                 .filter(x -> x.getStart().isAfter(LocalDateTime.now()))
                 .min((Comparator.comparing(Booking::getStart))).orElse(null);
 
-        List<CommentDto2> comments = commentRepository.findByItemId(itemId).stream()
-                .map(x -> CommentDto2.builder()
+        List<CommentDto> comments = commentRepository.findByItemId(itemId).stream()
+                .map(x -> CommentDto.builder()
                         .id(x.getId())
                         .author(x.getAuthor().getId())
                         .authorName(x.getAuthor().getName())
@@ -122,11 +123,11 @@ public class ItemServiceImpl implements ItemService {
                         .build())
                 .collect(Collectors.toList());
 
-        return itemMapper.toItemDto2(itemRepository.getReferenceById(itemId), userId, lastBooking, nextBooking, comments);
+        return itemMapper.toItemDtoForOwners(itemRepository.getReferenceById(itemId), userId, lastBooking, nextBooking, comments);
     }
 
     @Override
-    public List<ItemDto2> getItemsByUserId(long userId) {
+    public List<ItemDtoForOwners> getItemsByUserId(long userId) {
 
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");

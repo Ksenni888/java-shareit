@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 @Getter
 @Builder
-public class ItemDto2 {
+public class ItemDtoForOwners {
 
     private long id;
 
@@ -26,5 +26,5 @@ public class ItemDto2 {
 
     private BookingDto2 nextBooking;
 
-    private List<CommentDto2> comments;
+    private List<CommentDto> comments;
 }

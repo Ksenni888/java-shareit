@@ -5,9 +5,8 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.dto.BookingDto2;
 import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.CommentDto2;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDto2;
+import ru.practicum.shareit.item.dto.ItemDtoForOwners;
 import ru.practicum.shareit.item.model.Comments;
 import ru.practicum.shareit.item.model.Item;
 
@@ -28,9 +27,9 @@ public class ItemMapper {
                 .build();
     }
 
-    public ItemDto2 toItemDto2(Item item, long userId, Booking lastBooking, Booking nextBooking, List<CommentDto2> comments) {
+    public ItemDtoForOwners toItemDtoForOwners(Item item, long userId, Booking lastBooking, Booking nextBooking, List<CommentDto> comments) {
 
-        return ItemDto2.builder()
+        return ItemDtoForOwners.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())

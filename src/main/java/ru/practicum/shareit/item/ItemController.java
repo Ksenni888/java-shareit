@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDto2;
+import ru.practicum.shareit.item.dto.ItemDtoForOwners;
 import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.Valid;
@@ -47,13 +47,13 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto2 findById(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long itemId) {
+    public ItemDtoForOwners findById(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long itemId) {
         log.info("Get information about item");
         return itemService.findById(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto2> getItemsByUserId(@RequestHeader(USER_ID_HEADER) long userId) {
+    public List<ItemDtoForOwners> getItemsByUserId(@RequestHeader(USER_ID_HEADER) long userId) {
         log.info("Get all user's items");
         return itemService.getItemsByUserId(userId);
     }
