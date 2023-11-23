@@ -4,67 +4,78 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidException;
+import ru.practicum.shareit.item.dto.CommentDto;
+
 import ru.practicum.shareit.item.dto.ItemDto;
+
+import ru.practicum.shareit.item.dto.ItemDtoForOwners;
+import ru.practicum.shareit.item.model.Comments;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
     private static final Logger log = LoggerFactory.getLogger(ItemServiceImpl.class);
-
     private final ItemRepository itemRepository;
-
     private final UserRepository userRepository;
-
+    private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
     private final ItemMapper itemMapper;
 
+
     @Override
-    public ItemDto create(long userId, Item item) {
-        checkUser(userId);
+    @Transactional
+    public Item create(long userId, ItemDto itemDto) {
 
-        if (item.getAvailable() == null) {
-            log.warn("Available can't be empty");
-            throw new ValidException("Available can't be empty");
+        if (itemDto.getId() != 0) {
+            log.warn("id must be 0");
+            throw new ValidException("id must be 0");
         }
 
-        if (item.getName().isBlank()) {
-            log.warn("Name can't be empty");
-            throw new ValidException("Name can't be empty");
-        }
-
-        if (item.getDescription() == null) {
-            log.warn("Description can't be empty");
-            throw new ValidException("Description can't be empty");
-        }
-
-        if (!userRepository.containsUser(userId)) {
+        if (userId == 0) {
             log.warn("This user is not exist");
             throw new ObjectNotFoundException("This user is not exist");
         }
 
-        return itemMapper.toItemDto(itemRepository.create(item));
+        if (!userRepository.existsById(userId)) {
+            throw new ObjectNotFoundException("This user not found");
+        }
+
+        Item item = new Item();
+        item.setId(itemDto.getId());
+        item.setName(itemDto.getName());
+        item.setDescription(itemDto.getDescription());
+        item.setAvailable(itemDto.getAvailable());
+        item.setOwner(userRepository.findById(userId).orElseThrow());
+        item.setRequest(item.getRequest());
+
+        return itemRepository.save(item);
     }
 
     @Override
-    public ItemDto update(long userId, Item item, long itemId) {
-        checkUser(userId);
+    @Transactional
+    public Item update(long userId, Item item, long itemId) {
 
-        if (!itemRepository.containsItem(itemId)) {
+        if (!itemRepository.existsById(itemId)) {
             throw new ObjectNotFoundException("This item not found");
         }
 
-        if (itemRepository.findById(itemId).getOwner().getId() != userId) {
-            throw new ObjectNotFoundException("Items can changes only owners");
-        }
+        Item savedItem = itemRepository.getReferenceById(itemId);
 
-        Item savedItem = itemRepository.findById(itemId);
         if (item.getAvailable() != null) {
             savedItem.setAvailable(item.getAvailable());
         }
@@ -77,42 +88,94 @@ public class ItemServiceImpl implements ItemService {
             savedItem.setDescription(item.getDescription());
         }
 
-        return itemMapper.toItemDto(itemRepository.update(savedItem, itemId));
+        if (savedItem.getOwner().getId() != userId) {
+            throw new ObjectNotFoundException("Items can changes only owners");
+        }
+
+        return itemRepository.save(savedItem);
     }
 
     @Override
-    public ItemDto findById(long itemId) {
-        if (!itemRepository.containsItem(itemId)) {
+    public ItemDtoForOwners findById(long itemId, long userId) {
+
+        if (!itemRepository.existsById(itemId)) {
             throw new ObjectNotFoundException("Item not found");
         }
-        return itemMapper.toItemDto(itemRepository.findById(itemId));
+
+        List<Booking> saveBookings = bookingRepository.findByItemIdAndStatus(itemId, BookingStatus.APPROVED);
+
+        Booking lastBooking = saveBookings.stream()
+                .filter(x -> x.getEnd().isBefore(LocalDateTime.now()) ||
+                        ((x.getStart().isBefore(LocalDateTime.now())) && (x.getEnd().isAfter(LocalDateTime.now()))))
+                .max((Comparator.comparing(Booking::getEnd))).orElse(null);
+
+        Booking nextBooking = saveBookings.stream()
+                .filter(x -> x.getStart().isAfter(LocalDateTime.now()))
+                .min((Comparator.comparing(Booking::getStart))).orElse(null);
+
+        List<CommentDto> comments = commentRepository.findByItemId(itemId).stream()
+                .map(x -> CommentDto.builder()
+                        .id(x.getId())
+                        .author(x.getAuthor().getId())
+                        .authorName(x.getAuthor().getName())
+                        .text(x.getText())
+                        .created(x.getCreated())
+                        .build())
+                .collect(Collectors.toList());
+
+        return itemMapper.toItemDtoForOwners(itemRepository.getReferenceById(itemId), userId, lastBooking, nextBooking, comments);
     }
 
     @Override
-    public List<ItemDto> getItemsByUserId(long userId) {
-        checkUser(userId);
-        if (userRepository.getById(userId) == null) {
+    public List<ItemDtoForOwners> getItemsByUserId(long userId) {
+
+        if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
         }
-        return itemRepository.getItemsByUserId(userId).stream()
-                .map(itemMapper::toItemDto)
+
+        return itemRepository.findByOwnerId(userId).stream()
+                .map(x -> findById(x.getId(), userId))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<ItemDto> findItems(String text) {
+    public List<Item> findItems(String text) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemRepository.findItems(text).stream()
-                .map(itemMapper::toItemDto)
+
+        return itemRepository.search(text).stream()
+                .filter(Item::getAvailable)
                 .collect(Collectors.toList());
     }
 
-    public void checkUser(long userId) {
-        if (userId == 0) {
-            log.warn("User id can't be empty");
-            throw new ValidException("User id can't be empty");
+    @Override
+    public Comments addComment(long userId, long itemId, CommentDto commentDto) {
+
+        if (commentDto.getText().isBlank()) {
+            throw new ValidException("This field can't be empty, write the text");
         }
+
+        List<Booking> bookingsItemByUser = bookingRepository.findByBookerIdAndItemId(userId, itemId);
+
+        if (bookingsItemByUser.isEmpty()) {
+            throw new ObjectNotFoundException("You can't write the comment, because you didn't booking this item");
+        }
+
+        List<Booking> bookingsEndsBeforeNow = bookingsItemByUser.stream()
+                .filter(x -> x.getEnd().isBefore(LocalDateTime.now()))
+                .collect(Collectors.toList());
+
+        if (bookingsEndsBeforeNow.isEmpty()) {
+            throw new ValidException("You can't comment, because you didn't use this item");
+        }
+
+        Comments comments = new Comments();
+        comments.setAuthor(userRepository.getReferenceById(userId));
+        comments.setText(commentDto.getText());
+        comments.setItem(itemRepository.getReferenceById(itemId));
+        comments.setCreated(LocalDateTime.now());
+
+        return commentRepository.save(comments);
     }
 }

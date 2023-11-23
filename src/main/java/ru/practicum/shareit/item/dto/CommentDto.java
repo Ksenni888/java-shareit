@@ -5,23 +5,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
 @Builder
-public class ItemDto {
-
+public class CommentDto {
     private long id;
-
     @NotBlank
-    private String name;
-
-    @NotBlank
-    private String description;
-
-    @NotNull
-    private Boolean available;
-
-    private long request;
+    private String text;
+    private long author;
+    private String authorName;
+    private LocalDateTime created;
 }
