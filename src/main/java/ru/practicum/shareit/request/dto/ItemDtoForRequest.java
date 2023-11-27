@@ -5,21 +5,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practicum.shareit.item.model.Item;
-
-import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemRequestDto {
+public class ItemDtoForRequest {
     private long id;
-    private LocalDateTime created;
-    @NotNull
+    private String name;
     private String description;
-    private List<ItemDtoForRequest> items;
+    private long requestId;
+    private boolean available;
 }
