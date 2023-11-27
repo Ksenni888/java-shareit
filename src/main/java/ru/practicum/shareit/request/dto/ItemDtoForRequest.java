@@ -17,4 +17,5 @@ public class ItemDtoForRequest {
     private String description;
     private long requestId;
     private boolean available;
+
 }

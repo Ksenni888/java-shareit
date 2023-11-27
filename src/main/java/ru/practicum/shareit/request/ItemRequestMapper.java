@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemDtoForRequest;
+import ru.practicum.shareit.request.dto.ItemRequestAll;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import java.util.List;
@@ -21,6 +22,15 @@ public class ItemRequestMapper {
                 .build();
     }
 
+    public ItemRequestAll toDtoRequestAll(ItemRequest itemRequest) {
+        return ItemRequestAll.builder()
+                .id(itemRequest.getId())
+                .created(itemRequest.getCreated())
+                .description(itemRequest.getDescription())
+                .build();
+
+    }
+
     public ItemDtoForRequest toDtoItem(Item item) {
         return ItemDtoForRequest.builder()
                 .id(item.getId())
@@ -30,4 +40,5 @@ public class ItemRequestMapper {
                 .available(item.getAvailable())
                 .build();
     }
+
 }
