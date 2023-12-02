@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -9,6 +9,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoForOwners;
 import ru.practicum.shareit.item.model.Comments;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
@@ -25,6 +27,26 @@ public class ItemMapper {
                 .available(item.getAvailable())
                 .requestId(item.getRequest() != null ? item.getRequest().getId() : 0)
                 .build();
+    }
+
+    public Item toItem(ItemDto itemDto, User user, ItemRequest itemRequest) {
+//        Item item = new Item();
+//        item.setId(itemDto.getId());
+//        item.setName(itemDto.getName());
+//        item.setDescription(itemDto.getDescription());
+//        item.setAvailable(itemDto.getAvailable());
+//        item.setOwner(user);
+//        item.setRequest(itemDto.getRequestId() != 0 ? itemRequest : null);
+
+        return Item.builder()
+                .id(itemDto.getId())
+                .name(itemDto.getName())
+                .description(itemDto.getDescription())
+                .available(itemDto.getAvailable())
+                .owner(user)
+                .request(itemDto.getRequestId() != 0 ? itemRequest : null).build();
+
+        //  return item;
     }
 
     public ItemDtoForOwners toItemDtoForOwners(Item item, long userId, Booking lastBooking, Booking nextBooking, List<CommentDto> comments) {

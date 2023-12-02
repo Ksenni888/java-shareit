@@ -15,10 +15,15 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import ru.practicum.shareit.item.dto.ItemDtoForOwners;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comments;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.CommentRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.ItemRequestRepository;
-import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -41,7 +46,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item create(long userId, ItemDto itemDto) {
+    public ItemDto create(long userId, ItemDto itemDto) {
 
         if (itemDto.getId() != 0) {
             log.warn("id must be 0");
@@ -64,9 +69,8 @@ public class ItemServiceImpl implements ItemService {
         item.setAvailable(itemDto.getAvailable());
         item.setOwner(userRepository.findById(userId).orElseThrow());
         item.setRequest(itemDto.getRequestId() != 0 ? itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow() : null);
-              //  item.getRequest());
 
-        return itemRepository.save(item);
+        return itemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
