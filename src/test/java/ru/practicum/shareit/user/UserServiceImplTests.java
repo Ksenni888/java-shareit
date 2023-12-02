@@ -9,7 +9,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.user.dto.UserDto;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTests {
@@ -56,6 +59,8 @@ public class UserServiceImplTests {
             .email("nik@mail.ru")
             .build();
 
+    public static List<User> users = new ArrayList<>();
+
     @Test
     public void createUserTest() {
 
@@ -64,23 +69,36 @@ public class UserServiceImplTests {
 
         UserDto result = userService.create(inputUser);
 
-        Assertions.assertEquals(outputUserDto,result);
+        Assertions.assertEquals(outputUserDto, result);
     }
 
-  @Test
-  public void updateUserTest() {
+    @Test
+    public void updateUserTest() {
 
-      Mockito.when(userRepository.existsById(1L)).thenReturn(true);
-      Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(inputUserAfterSave));
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(inputUserAfterSave));
 
-      Mockito.when(userRepository.save(inputUserAfterSave)).thenReturn(UserWithOtherNameAfterSave);
-      Mockito.when(userMapper.toDto(UserWithOtherNameAfterSave)).thenReturn(UserWithOtherNameDto);
+        Mockito.when(userRepository.save(inputUserAfterSave)).thenReturn(UserWithOtherNameAfterSave);
+        Mockito.when(userMapper.toDto(UserWithOtherNameAfterSave)).thenReturn(UserWithOtherNameDto);
 
-      UserDto result = userService.update(inputUserWithOtherName, 1L);
+        UserDto result = userService.update(inputUserWithOtherName, 1L);
 
-      Assertions.assertEquals(UserWithOtherNameDto.getName(),result.getName());
+        Assertions.assertEquals(UserWithOtherNameDto.getName(), result.getName());
 
-  }
+    }
+
+    @Test
+    public void getAllUsersTest() {
+        users.add(inputUserAfterSave);
+        Mockito.when(userRepository.findAll()).thenReturn(users);
+        List<UserDto> usersDto = users.stream()
+                .map(x -> userMapper.toDto(x))
+                .collect(Collectors.toList());
+
+        List<UserDto> result = userService.getAll();
+
+        Assertions.assertEquals(usersDto, result);
+    }
 
 
 
