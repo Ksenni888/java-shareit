@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplTests {
 
@@ -84,7 +86,6 @@ public class UserServiceImplTests {
         UserDto result = userService.update(inputUserWithOtherName, 1L);
 
         Assertions.assertEquals(UserWithOtherNameDto.getName(), result.getName());
-
     }
 
     @Test
@@ -100,6 +101,20 @@ public class UserServiceImplTests {
         Assertions.assertEquals(usersDto, result);
     }
 
+    @Test
+    public void getByIdTest() {
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
 
+        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(inputUserAfterSave));
 
+        User result = userService.getById(1L);
+
+        Assertions.assertEquals(inputUserAfterSave, result);
+    }
+
+    @Test
+    public void deleteByIdTest() {
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        assertDoesNotThrow(() -> userService.deleteById(1L));
+    }
 }
