@@ -19,6 +19,8 @@ import ru.practicum.shareit.item.dto.ItemDtoForOwners;
 import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,7 +62,12 @@ public class ItemController {
 
     @GetMapping("/search")
     @ResponseBody
-    public List<ItemDto> findItems(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam String text) {
+    public List<ItemDto> findItems(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam String text,
+                                   @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                   @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+        if (from < 0 || size < 1) {
+            throw new ValidationException("from and size can be over 0");
+        }
         log.info("Seach items by request with available status");
         return itemService.findItems(text).stream()
                 .map(itemMapper::toItemDto)

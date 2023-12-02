@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import javax.validation.constraints.Min;
 import java.util.List;
 
@@ -39,15 +40,22 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<ItemRequestDto> getRequest(@RequestHeader(USER_ID_HEADER) long userId) {
+    public List<ItemRequestDto> getRequest(@RequestHeader(USER_ID_HEADER) long userId,
+                                           @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                           @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+        if (from < 0 || size < 1) {
+            throw new ValidationException("from and size can be over 0");
+        }
         return itemRequestService.getRequest(userId);
     }
 
     @GetMapping("/all")
     public List<ItemRequestDto> getAllRequests(@RequestHeader(USER_ID_HEADER) long userId,
                                                @RequestParam(defaultValue = "0") @Min(0) Integer from,
-                                               @RequestParam(defaultValue = "10") @Min(0) Integer size) {
-        Integer page = from;
-        return itemRequestService.getAllRequests(userId, PageRequest.of(page, size, Sort.by("created").descending()));
+                                               @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+        if (from < 0 || size < 1) {
+            throw new ValidationException("from and size can be over 0");
+        }
+        return itemRequestService.getAllRequests(userId, PageRequest.of(from / size, size, Sort.by("created").descending()));
     }
 }

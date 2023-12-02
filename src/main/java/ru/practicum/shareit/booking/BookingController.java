@@ -3,6 +3,8 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.dto.BookingDto;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
@@ -45,13 +49,26 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<Booking> getBookingsByStatus(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam(defaultValue = "ALL") String state) {
+    public List<Booking> getBookingsByStatus(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam(defaultValue = "ALL") String state,
+                                             @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                             @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+
+        if (from < 0 || size < 1) {
+            throw new ValidationException("from and size can be over 0");
+        }
         log.info("Get list of user's bookings");
-        return bookingService.getBookingsByStatus(userId, state);
+        return bookingService.getBookingsByStatus(userId, state,
+                PageRequest.of(from / size, size, Sort.by("start").descending()));
     }
 
     @GetMapping("/owner")
-    public List<Booking> getUserBookings(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getUserBookings(userId, state);
+    public List<Booking> getUserBookings(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam(defaultValue = "ALL") String state,
+                                         @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                         @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+
+        if (from < 0 || size < 1) {
+            throw new ValidationException("from and size can be over 0");
+        }
+        return bookingService.getUserBookings(userId, state, PageRequest.of(from / size, size, Sort.by("start").descending()));
     }
 }

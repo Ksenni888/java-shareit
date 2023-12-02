@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -142,17 +143,17 @@ public class BookingServiceImpl implements BookingService {
         return saveBooking;
     }
 
-    public List<Booking> getBookingsByStatus(long userId, String state) {
+    public List<Booking> getBookingsByStatus(long userId, String state, Pageable pageable) {
 
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("This user not exist");
         }
 
-        List<Booking> bookingsByUserId = bookingRepository.findByBookerId(userId);
+        List<Booking> bookingsByUserId = bookingRepository.findByBookerId(userId, pageable);
         return checkState(bookingsByUserId, state);
     }
 
-    public List<Booking> getUserBookings(long ownerId, String state) {
+    public List<Booking> getUserBookings(long ownerId, String state, Pageable pageable) {
 
         List<Item> itemByOwnerId = itemRepository.findByOwnerId(ownerId);
 
@@ -163,7 +164,7 @@ public class BookingServiceImpl implements BookingService {
         List<Long> allItemsByUser = itemByOwnerId.stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());
-        List<Booking> saveBooking = bookingRepository.findByItemIdIn(allItemsByUser);
+        List<Booking> saveBooking = bookingRepository.findByItemIdIn(allItemsByUser, pageable);
 
         return checkState(saveBooking, state);
 
