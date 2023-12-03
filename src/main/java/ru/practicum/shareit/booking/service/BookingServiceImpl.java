@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.service;
 
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidException;
 import ru.practicum.shareit.item.repository.ItemRepository;

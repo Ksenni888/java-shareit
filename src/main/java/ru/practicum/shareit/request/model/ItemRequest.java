@@ -1,18 +1,14 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.request.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,28 +23,20 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "bookings")
-public class Booking {
+@Table(name = "requests")
+public class ItemRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "booking_id")
+    @Column(name = "request_id")
     private long id;
 
-    @Column(name = "start_date")
-    private LocalDateTime start;
+    @Column(name = "description", length = 512)
+    private String description;
 
-    @Column(name = "end_date")
-    private LocalDateTime end;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "item_id")
-    private Item item;
-
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id")
-    private User booker;
+    private User user;
 
-    @Enumerated(value = EnumType.STRING)
-    @JoinColumn(name = "status")
-    private BookingStatus status;
+    @Column(name = "created")
+    private LocalDateTime created;
 }

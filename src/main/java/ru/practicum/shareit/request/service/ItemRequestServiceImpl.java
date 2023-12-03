@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -10,6 +10,9 @@ import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidException;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.mapper.ItemRequestMapper;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
@@ -31,8 +34,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestDto findRequestById(long userId, long requestId) {
-        if (!userRepository.existsById(userId)) {throw new ObjectNotFoundException("User not found");}
-        if (!itemRequestRepository.existsById(requestId)) {throw new ObjectNotFoundException("Request not found");}
+
+        if (!userRepository.existsById(userId)) {
+            throw new ObjectNotFoundException("User not found");
+        }
+        if (!itemRequestRepository.existsById(requestId)) {
+            throw new ObjectNotFoundException("Request not found");
+        }
         ItemRequest saveItemRequest = itemRequestRepository.findById(requestId).orElseThrow();
         return itemRequestMapper.toDtoRequest(saveItemRequest, itemRepository.findByRequestId(saveItemRequest.getId()));
     }
@@ -60,6 +68,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDto> getRequest(long userId) {
+
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
         }
@@ -74,6 +83,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDto> getAllRequests(long userId, Pageable pageable) {
+
         return itemRequestRepository.findAll(pageable).stream()
                 .filter(x -> x.getUser().getId() != userId)
                 .map(x -> itemRequestMapper.toDtoRequest(x, itemRepository.findByRequestId(x.getId())))
