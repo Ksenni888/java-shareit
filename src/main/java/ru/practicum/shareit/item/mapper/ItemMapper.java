@@ -30,14 +30,6 @@ public class ItemMapper {
     }
 
     public Item toItem(ItemDto itemDto, User user, ItemRequest itemRequest) {
-//        Item item = new Item();
-//        item.setId(itemDto.getId());
-//        item.setName(itemDto.getName());
-//        item.setDescription(itemDto.getDescription());
-//        item.setAvailable(itemDto.getAvailable());
-//        item.setOwner(user);
-//        item.setRequest(itemDto.getRequestId() != 0 ? itemRequest : null);
-
         return Item.builder()
                 .id(itemDto.getId())
                 .name(itemDto.getName())
@@ -45,8 +37,6 @@ public class ItemMapper {
                 .available(itemDto.getAvailable())
                 .owner(user)
                 .request(itemDto.getRequestId() != 0 ? itemRequest : null).build();
-
-        //  return item;
     }
 
     public ItemDtoForOwners toItemDtoForOwners(Item item, long userId, Booking lastBooking, Booking nextBooking, List<CommentDto> comments) {
