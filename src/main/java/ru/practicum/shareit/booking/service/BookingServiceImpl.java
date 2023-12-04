@@ -7,14 +7,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidException;
-import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
@@ -31,8 +33,10 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final BookingMapper bookingMapper;
 
     @Transactional(rollbackFor = Exception.class)
+    @Override
     public Booking createBooking(long userId, BookingDto bookingDto) {
 
         LocalDateTime saveStartTime = bookingDto.getStart();
@@ -52,11 +56,16 @@ public class BookingServiceImpl implements BookingService {
 
         long saveItemId = bookingDto.getItemId();
 
+        if (!itemRepository.existsById(saveItemId)) {
+            log.warn("This item is not exist");
+            throw new ObjectNotFoundException("This item is not exist");
+        }
+
+        Item itemSave = itemRepository.findById(saveItemId).orElseThrow();
+
         if (itemRepository.findById(saveItemId).isEmpty()) {
             throw new ObjectNotFoundException("Item not found");
         }
-
-        Item itemSave = itemRepository.getReferenceById(saveItemId);
 
         if (!itemSave.getAvailable()) {
             throw new ValidException("Item is not available");
@@ -67,23 +76,15 @@ public class BookingServiceImpl implements BookingService {
             throw new ObjectNotFoundException("You can't send request for your item");
         }
 
-        Booking saveBooking = new Booking();
-        saveBooking.setId(bookingDto.getId());
-        saveBooking.setStart(bookingDto.getStart());
-        saveBooking.setEnd(bookingDto.getEnd());
-        saveBooking.setItem(itemRepository.findById(bookingDto.getItemId()).orElseThrow());
-        saveBooking.setBooker(userRepository.findById(userId).orElseThrow());
-        saveBooking.setStatus(BookingStatus.WAITING);
+        User user = userRepository.findById(userId).orElseThrow();
+        Booking saveBooking = bookingMapper.toBooking(bookingDto, user, itemSave);
 
         return bookingRepository.save(saveBooking);
     }
 
     @Transactional
+    @Override
     public Booking checkRequest(long userId, long bookingId, String approved) {
-
-        Booking saveBooking = bookingRepository.findById(bookingId).orElseThrow();
-        saveBooking.setBooker(userRepository.getReferenceById(saveBooking.getBooker().getId()));
-        saveBooking.setItem(itemRepository.getReferenceById(saveBooking.getItem().getId()));
 
         if (approved.isBlank()) {
             throw new ValidException("approved must be true/false");
@@ -96,6 +97,8 @@ public class BookingServiceImpl implements BookingService {
         if (!bookingRepository.existsById(bookingId)) {
             throw new ObjectNotFoundException("This booking not found");
         }
+
+        Booking saveBooking = bookingRepository.findById(bookingId).orElseThrow();
 
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
@@ -128,6 +131,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    @Override
     public Booking getBooking(long userId, long bookingId) {
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
@@ -146,6 +150,7 @@ public class BookingServiceImpl implements BookingService {
         return saveBooking;
     }
 
+    @Override
     public List<Booking> getBookingsByStatus(long userId, String state, Pageable pageable) {
 
         if (!userRepository.existsById(userId)) {
@@ -156,6 +161,7 @@ public class BookingServiceImpl implements BookingService {
         return checkState(bookingsByUserId, state);
     }
 
+    @Override
     public List<Booking> getUserBookings(long ownerId, String state, Pageable pageable) {
 
         List<Item> itemByOwnerId = itemRepository.findByOwnerId(ownerId);

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceImplTests {
+public class UserServiceTests {
 
     @InjectMocks
     private UserServiceImpl userService;

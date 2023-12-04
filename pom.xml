@@ -10,7 +10,7 @@
 	</parent>
 
 	<groupId>ru.practicum</groupId>
-	<artifactId>shareit</artifactId>
+	<artifactId>java-shareit</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
 	<name>ShareIt</name>
@@ -165,27 +165,27 @@
 											<limit>
 												<counter>LINE</counter>
 												<value>COVEREDRATIO</value>
-												<minimum>0.01</minimum>
+												<minimum>0.09</minimum>
 											</limit>
 											<limit>
 												<counter>BRANCH</counter>
 												<value>COVEREDRATIO</value>
-												<minimum>0.01</minimum>
+												<minimum>0.06</minimum>
 											</limit>
 											<limit>
 												<counter>COMPLEXITY</counter>
 												<value>COVEREDRATIO</value>
-												<minimum>0.01</minimum>
+												<minimum>0.06</minimum>
 											</limit>
 											<limit>
 												<counter>METHOD</counter>
 												<value>COVEREDRATIO</value>
-												<minimum>0.01</minimum>
+												<minimum>0.07</minimum>
 											</limit>
 											<limit>
 												<counter>CLASS</counter>
 												<value>MISSEDCOUNT</value>
-												<maximum>8</maximum>
+												<maximum>1</maximum>
 											</limit>
 										</limits>
 									</rule>
