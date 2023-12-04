@@ -14,8 +14,7 @@ import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
-
-import java.time.LocalDateTime;
+import ru.practicum.shareit.user.model.User;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -57,11 +56,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             throw new ObjectNotFoundException("User not found");
         }
 
-        ItemRequest saveItemRequest = new ItemRequest();
-        saveItemRequest.setId(itemRequestDto.getId());
-        saveItemRequest.setCreated(LocalDateTime.now());
-        saveItemRequest.setDescription(itemRequestDto.getDescription());
-        saveItemRequest.setUser(userRepository.findById(userId).orElseThrow());
+        User user = userRepository.findById(userId).orElseThrow();
+        ItemRequest saveItemRequest = itemRequestMapper.toRequest(itemRequestDto, user);
 
         return itemRequestRepository.save(saveItemRequest);
     }

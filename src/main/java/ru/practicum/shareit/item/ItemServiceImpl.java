@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidException;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -18,7 +18,10 @@ import ru.practicum.shareit.item.model.Comments;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.mapper.ItemRequestMapper;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
@@ -38,6 +41,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final ItemMapper itemMapper;
+    private final ItemRequestMapper itemRequestMapper;
 
 
     @Override
@@ -58,13 +62,16 @@ public class ItemServiceImpl implements ItemService {
             throw new ObjectNotFoundException("This user not found");
         }
 
-        Item item = new Item();
-        item.setId(itemDto.getId());
-        item.setName(itemDto.getName());
-        item.setDescription(itemDto.getDescription());
-        item.setAvailable(itemDto.getAvailable());
-        item.setOwner(userRepository.findById(userId).orElseThrow());
-        item.setRequest(itemDto.getRequestId() != 0 ? itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow() : null);
+        User user = userRepository.findById(userId).orElseThrow();
+        ItemRequest itemRequest;
+
+        if (itemDto.getRequestId() != 0) {
+            itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow();
+        } else {
+            itemRequest = null;
+        }
+
+        Item item = itemMapper.toItem(itemDto, user, itemRequest);
 
         return itemMapper.toItemDto(itemRepository.save(item));
     }
@@ -173,11 +180,9 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidException("You can't comment, because you didn't use this item");
         }
 
-        Comments comments = new Comments();
-        comments.setAuthor(userRepository.getReferenceById(userId));
-        comments.setText(commentDto.getText());
-        comments.setItem(itemRepository.getReferenceById(itemId));
-        comments.setCreated(LocalDateTime.now());
+        User user = userRepository.getReferenceById(userId);
+        Item item = itemRepository.getReferenceById(itemId);
+        Comments comments = itemMapper.toComment(commentDto, user, item);
 
         return commentRepository.save(comments);
     }

@@ -8,21 +8,26 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoForOwners;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comments;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
@@ -62,55 +67,56 @@ public class ItemServiceTests {
 
     @Test
     public void createTest() {
-//        User user = User.builder()
-//                .id(1L)
-//                .name("Николай")
-//                .email("nik@mail.ru")
-//                .build();
-//
-//        Item item2 = Item.builder()
-//                .id(1L)
-//                .name("item")
-//                .description("description item")
-//                .available(true)
-//                .owner(user)
-//                .request(null)
-//                .build();
-//
-//        ItemDto itemDto = ItemDto.builder()
-//                .id(0L)
-//                .name("item")
-//                .description("description item")
-//                .available(true)
-//                .requestId(0)
-//                .build();
-//
-//        ItemDto itemDto2 = ItemDto.builder()
-//                .id(1L)
-//                .name("item")
-//                .description("description item")
-//                .available(true)
-//                .requestId(0)
-//                .build();
-//        when(userRepository.existsById(1L)).thenReturn(true);
-//
-//        Item saveItem = new Item();
-//        saveItem.setId(0L);
-//        saveItem.setName("item");
-//        saveItem.setDescription("description item");
-//        saveItem.setAvailable(true);
-//        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-//        saveItem.setOwner(user);
-//        when(itemRequestRepository.findById(itemDto.getRequestId())).thenReturn(null);
-//        saveItem.setRequest(null);
-//
-//        when(itemRepository.save(saveItem)).thenReturn(item2);
-//        when(itemMapper.toItemDto(item2)).thenReturn(itemDto2);
-//
-//        ItemDto result = itemService.create(1L, itemDto);
-//
-//        Assertions.assertEquals(result, itemDto2);
+        User user2 = User.builder()
+                .id(2L)
+                .name("Нико")
+                .email("nik7@mail.ru")
+                .build();
 
+        ItemRequest request = ItemRequest.builder()
+                .id(1L)
+                .description("item")
+                .created(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30))
+                .user(user2)
+                .build();
+
+        Item item2 = Item.builder()
+                .id(1L)
+                .name("item")
+                .description("description item")
+                .available(true)
+                .owner(user)
+                .request(request)
+                .build();
+
+        ItemDto itemDto2 = ItemDto.builder()
+                .id(1L)
+                .name("item")
+                .description("description item")
+                .available(true)
+                .requestId(1L)
+                .build();
+
+        ItemDto itemDto = ItemDto.builder()
+                .id(0L)
+                .name("item")
+                .description("description item")
+                .available(true)
+                .requestId(1L)
+                .build();
+
+        when(userRepository.existsById(1L)).thenReturn(true);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(itemRequestRepository.findById(1L)).thenReturn(Optional.ofNullable(request));
+        Item item = itemMapper.toItem(itemDto, user, request);
+
+        when(itemRepository.save(item)).thenReturn(item2);
+        when(itemMapper.toItemDto(item2)).thenReturn(itemDto2);
+
+        ItemDto result = itemService.create(user.getId(), itemDto);
+
+        Assertions.assertEquals(result, itemDto2);
     }
 
     @Test
@@ -183,9 +189,6 @@ public class ItemServiceTests {
         String text = "tekst";
         List<Item> items = List.of(item);
         Mockito.when(itemRepository.search(text)).thenReturn(items);
-        items.stream()
-                .filter(Item::getAvailable)
-                .collect(Collectors.toList());
 
         List<Item> result = itemService.findItems(text);
         Assertions.assertEquals(items, result);
@@ -194,5 +197,59 @@ public class ItemServiceTests {
     @Test
     public void addCommentTest() {
 
+        User user = User.builder()
+                .id(1L)
+                .name("Николай")
+                .email("nik@mail.ru")
+                .build();
+
+        User user2 = User.builder()
+                .id(2L)
+                .name("Иван")
+                .email("nik1@mail.ru")
+                .build();
+
+        Item item = Item.builder()
+                .id(1L)
+                .name("item")
+                .description("description item")
+                .available(true)
+                .owner(user)
+                .request(null)
+                .build();
+
+        Booking booking = Booking.builder()
+                .id(1L)
+                .start(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30))
+                .end(LocalDateTime.of(2023, Month.APRIL, 10, 12, 30))
+                .item(item)
+                .booker(user2)
+                .status(BookingStatus.APPROVED)
+                .build();
+
+        CommentDto commentDto = CommentDto.builder()
+                .text("comment1")
+                .build();
+
+        Comments comments1 = Comments.builder()
+                .id(1L)
+                .author(user2)
+                .text("comment1")
+                .item(item)
+                .created(LocalDateTime.now())
+                .build();
+
+        Mockito.when(bookingRepository.findByBookerIdAndItemId(2L, 1L)).thenReturn(List.of(booking));
+
+        Mockito.when(userRepository.getReferenceById(2L)).thenReturn(user);
+        Mockito.when(itemRepository.getReferenceById(1L)).thenReturn(item);
+
+        Comments comments = new Comments();
+        when(itemMapper.toComment(commentDto, user, item)).thenReturn(comments);
+
+        Mockito.when(commentRepository.save(comments)).thenReturn(comments1);
+
+        Comments result = itemService.addComment(2L, 1L, commentDto);
+        Assertions.assertEquals(result, comments1);
     }
 }
