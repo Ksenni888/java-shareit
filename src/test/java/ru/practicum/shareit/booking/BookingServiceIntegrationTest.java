@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
@@ -6,16 +6,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.item.dto.ItemDtoForOwners;
+import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.item.model.Comments;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -28,20 +29,20 @@ import java.util.stream.Collectors;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class ItemServiceIntegrationTest {
+public class BookingServiceIntegrationTest {
+    @Autowired
+    private final BookingRepository bookingRepository;
     @Autowired
     private final ItemRepository itemRepository;
     @Autowired
     private final UserRepository userRepository;
     @Autowired
-    private final BookingRepository bookingRepository;
+    private final BookingServiceImpl bookingService;
     @Autowired
     private final CommentRepository commentRepository;
-    @Autowired
-    private final ItemServiceImpl itemService;
 
     @Test
-    public void getItemsByUserId() {
+    public void getUserBookingsTest() {
         User user = new User(0L, "userName", "user@user.ru");
         User saveUser = userRepository.save(user);
 
@@ -79,12 +80,16 @@ public class ItemServiceIntegrationTest {
         bookingRepository.save(saveBooking);
         commentRepository.save(comments);
 
-        List<ItemDtoForOwners> allItems = itemRepository.findByOwnerId(1L).stream()
-                .map(x -> itemService.findById(x.getId(), 1L))
+        List<Item> itemByOwnerId = itemRepository.findByOwnerId(1L);
+
+        List<Long> allItemsByUser = itemByOwnerId.stream()
+                .map(Item::getId)
                 .collect(Collectors.toList());
+        List<Booking> saveBooking1 = bookingRepository.findByItemIdIn(allItemsByUser, PageRequest.of(0, 1, Sort.by("start").descending()));
 
-        List<ItemDtoForOwners> result = itemService.getItemsByUserId(1L);
+        List<Booking> allUserBookings = bookingService.checkState(saveBooking1, "ALL");
+        List<Booking> result = bookingService.getUserBookings(1L, "ALL", PageRequest.of(0, 1, Sort.by("start").descending()));
 
-        Assertions.assertEquals(allItems.get(0).getId(), result.get(0).getId());
+        Assertions.assertEquals(allUserBookings.get(0), result.get(0));
     }
 }
