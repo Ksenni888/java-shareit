@@ -93,10 +93,7 @@ public class ItemServiceIntegrationTest {
                 .collect(Collectors.toList());
 
         List<ItemDtoForOwners> result = itemService.getItemsByUserId(1L);
-        System.out.println("***********************************************");
-        System.out.println(allItems.get(0).getLastBooking());
-        System.out.println(result.get(0).getLastBooking());
-        System.out.println("***********************************************");
+
         Assertions.assertEquals(allItems.get(0).getId(), result.get(0).getId());
         Assertions.assertEquals(allItems.get(0).getName(), result.get(0).getName());
         Assertions.assertEquals(allItems.get(0).getDescription(), result.get(0).getDescription());
