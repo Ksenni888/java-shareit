@@ -87,7 +87,6 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.name").value(userDto1.getName()));
     }
@@ -109,13 +108,10 @@ public class UserControllerTest {
         mockMvc.perform(get("/users"))
                 .andDo(print())
                 .andExpect(status().isOk())
-
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(saveUserDto.get(0).getId()))
                 .andExpect(jsonPath("$[0].name").value(saveUserDto.get(0).getName()))
                 .andExpect(jsonPath("$[0].email").value(saveUserDto.get(0).getEmail()));
     }
-
-    public void getById() {}
 }
