@@ -51,6 +51,7 @@ public class ItemServiceIntegrationTest {
                 .email("nik7@mail.ru")
                 .build();
         User saveUser2 = userRepository.save(user2);
+        saveUser2.setId(2L);
 
         Item item = Item.builder()
                 .id(0L)
@@ -74,7 +75,7 @@ public class ItemServiceIntegrationTest {
         comments.setText("srzgezb");
         comments.setCreated(LocalDateTime.of(2023, Month.APRIL, 11, 12, 30));
         comments.setItem(item1);
-        comments.setAuthor(saveUser);
+        comments.setAuthor(saveUser2);
 
         bookingRepository.save(saveBooking);
         commentRepository.save(comments);
@@ -84,7 +85,6 @@ public class ItemServiceIntegrationTest {
                 .collect(Collectors.toList());
 
         List<ItemDtoForOwners> result = itemService.getItemsByUserId(1L);
-
         Assertions.assertEquals(allItems.get(0).getId(), result.get(0).getId());
     }
 }

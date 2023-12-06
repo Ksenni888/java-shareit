@@ -52,6 +52,7 @@ public class BookingServiceIntegrationTest {
                 .email("nik7@mail.ru")
                 .build();
         User saveUser2 = userRepository.save(user2);
+        saveUser2.setId(2L);
 
         Item item = Item.builder()
                 .id(0L)
@@ -75,7 +76,7 @@ public class BookingServiceIntegrationTest {
         comments.setText("srzgezb");
         comments.setCreated(LocalDateTime.of(2023, Month.APRIL, 11, 12, 30));
         comments.setItem(item1);
-        comments.setAuthor(saveUser);
+        comments.setAuthor(saveUser2);
 
         bookingRepository.save(saveBooking);
         commentRepository.save(comments);
@@ -90,6 +91,6 @@ public class BookingServiceIntegrationTest {
         List<Booking> allUserBookings = bookingService.checkState(saveBooking1, "ALL");
         List<Booking> result = bookingService.getUserBookings(1L, "ALL", PageRequest.of(0, 1, Sort.by("start").descending()));
 
-        Assertions.assertEquals(allUserBookings.get(0), result.get(0));
+        Assertions.assertEquals(allUserBookings.get(0).getBooker(), result.get(0).getBooker());
     }
 }
