@@ -2,9 +2,12 @@
 //
 //import lombok.RequiredArgsConstructor;
 //import org.junit.jupiter.api.Assertions;
+//import org.junit.jupiter.api.BeforeAll;
 //import org.junit.jupiter.api.Test;
+//import org.junit.jupiter.api.TestInstance;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+//import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 //import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.data.domain.PageRequest;
 //import org.springframework.data.domain.Sort;
@@ -28,31 +31,33 @@
 //@Transactional
 //@SpringBootTest
 //@AutoConfigureTestDatabase
-//@RequiredArgsConstructor(onConstructor_ = @Autowired)
 //public class BookingServiceIntegrationTest {
 //    @Autowired
-//    private final BookingRepository bookingRepository;
+//    private BookingRepository bookingRepository;
 //    @Autowired
-//    private final ItemRepository itemRepository;
+//    private ItemRepository itemRepository;
 //    @Autowired
-//    private final UserRepository userRepository;
+//    private UserRepository userRepository;
 //    @Autowired
-//    private final BookingServiceImpl bookingService;
+//    private BookingServiceImpl bookingService;
 //    @Autowired
-//    private final CommentRepository commentRepository;
+//    private CommentRepository commentRepository;
 //
 //    @Test
 //    public void getUserBookingsTest() {
-//        User user = new User(0L, "userName", "user@user.ru");
+//        userRepository.deleteAll();
+//        User user = new User(0L, "userName", "user3@user.ru");
 //        User saveUser = userRepository.save(user);
 //
 //        User user2 = User.builder()
 //                .id(0L)
 //                .name("Нико")
-//                .email("nik7@mail.ru")
+//                .email("nik90@mail.ru")
 //                .build();
 //        User saveUser2 = userRepository.save(user2);
-//        saveUser2.setId(2L);
+//
+//        System.out.println("saveUser.getId()*****************************" + saveUser.getId());
+//        System.out.println("saveUser2.getId()*****************************" + saveUser2.getId());
 //
 //        Item item = Item.builder()
 //                .id(0L)
