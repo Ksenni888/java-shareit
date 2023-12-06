@@ -51,7 +51,6 @@ public class ItemServiceIntegrationTest {
                 .email("nik7@mail.ru")
                 .build();
         User saveUser2 = userRepository.save(user2);
-        saveUser2.setId(2L);
 
         Item item = Item.builder()
                 .id(0L)
@@ -88,11 +87,11 @@ public class ItemServiceIntegrationTest {
         comments.setAuthor(saveUser2);
         commentRepository.save(comments);
 
-        List<ItemDtoForOwners> allItems = itemRepository.findByOwnerId(1L).stream()
-                .map(x -> itemService.findById(x.getId(), 1L))
+        List<ItemDtoForOwners> allItems = itemRepository.findByOwnerId(2L).stream()
+                .map(x -> itemService.findById(x.getId(), 2L))
                 .collect(Collectors.toList());
 
-        List<ItemDtoForOwners> result = itemService.getItemsByUserId(1L);
+        List<ItemDtoForOwners> result = itemService.getItemsByUserId(2L);
 
         Assertions.assertEquals(allItems.get(0).getId(), result.get(0).getId());
         Assertions.assertEquals(allItems.get(0).getName(), result.get(0).getName());
