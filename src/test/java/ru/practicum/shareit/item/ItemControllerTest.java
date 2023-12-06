@@ -1,49 +1,25 @@
 package ru.practicum.shareit.item;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.Request;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
-import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.request.repository.ItemRequestRepository;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.Optional;
-
-
-import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -70,6 +46,7 @@ public class ItemControllerTest {
                 .standaloneSetup(itemController)
                 .build();
     }
+
     public static final User user = new User(1, "userName", "email");
     public static final String itemName = "Дрель";
     public static final String itemDescription = "Простая дрель";
@@ -77,7 +54,8 @@ public class ItemControllerTest {
     public static final ItemDto itemDto = new ItemDto(1, itemName, itemDescription, available, 0);
     public static final Item item = new Item(1, itemName, itemDescription, true, user, null);
     public static final Item itemUpd = new Item(1, "itemName2", "itemDescription2", true, user, null);
-    public static final ItemDto itemUpdDto = new ItemDto(1, "itemName2", "itemDescription2", true,  0);
+    public static final ItemDto itemUpdDto = new ItemDto(1, "itemName2", "itemDescription2", true, 0);
+
     @Test
     public void create() throws Exception {
 
@@ -117,8 +95,6 @@ public class ItemControllerTest {
 
     }
 
-
-
     public static String createItemDtoJson(String name, String description, boolean available) {
         return "{\n" +
                 "    \"name\": \"" + name + "\",\n" +
@@ -126,7 +102,4 @@ public class ItemControllerTest {
                 "    \"available\": " + available + "\n" +
                 "}";
     }
-
-
-
 }
