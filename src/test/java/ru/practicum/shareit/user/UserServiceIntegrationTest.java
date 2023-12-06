@@ -45,6 +45,5 @@ public class UserServiceIntegrationTest {
         Assertions.assertEquals(userDto.getId(), allusers.get(0).getId());
         Assertions.assertEquals(userDto.getName(), allusers.get(0).getName());
         Assertions.assertEquals(userDto.getEmail(), allusers.get(0).getEmail());
-
     }
 }

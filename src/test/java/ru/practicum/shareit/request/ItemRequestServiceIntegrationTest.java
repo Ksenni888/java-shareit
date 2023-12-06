@@ -34,19 +34,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ItemRequestServiceIntegrationTest {
     @Autowired
-    private final ItemRequestRepository itemRequestRepository;
+    private ItemRequestRepository itemRequestRepository;
     @Autowired
-    private final ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Autowired
-    private final ItemRequestMapper itemRequestMapper;
+    private ItemRequestMapper itemRequestMapper;
     @Autowired
-    private final ItemRequestServiceImpl itemRequestService;
+    private ItemRequestServiceImpl itemRequestService;
     @Autowired
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    private final BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
     @Autowired
-    private final CommentRepository commentRepository;
+    private CommentRepository commentRepository;
 
     @Test
     public void getAllRequestsTest() {

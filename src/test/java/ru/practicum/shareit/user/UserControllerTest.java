@@ -38,7 +38,7 @@ public class UserControllerTest {
     @Mock
     private UserMapper userMapper;
     @InjectMocks
-    UserController userController;
+    private UserController userController;
     private MockMvc mockMvc;
     private final ObjectMapper mapper = new ObjectMapper();
 

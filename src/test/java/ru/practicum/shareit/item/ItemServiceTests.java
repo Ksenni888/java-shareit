@@ -51,23 +51,14 @@ public class ItemServiceTests {
     @InjectMocks
     private ItemServiceImpl itemService;
 
-    User user = User.builder()
+    @Test
+    public void createTest() {
+        User user = User.builder()
             .id(1L)
             .name("Николай")
             .email("nik@mail.ru")
             .build();
 
-    Item item = Item.builder()
-            .id(1L)
-            .name("item")
-            .description("description item")
-            .available(true)
-            .owner(user)
-            .request(null)
-            .build();
-
-    @Test
-    public void createTest() {
         User user2 = User.builder()
                 .id(2L)
                 .name("Нико")
@@ -122,6 +113,20 @@ public class ItemServiceTests {
 
     @Test
     public void updateTest() {
+        User user = User.builder()
+           .id(1L)
+            .name("Николай")
+           .email("nik@mail.ru")
+            .build();
+
+        Item item = Item.builder()
+            .id(1L)
+            .name("item")
+            .description("description item")
+            .available(true)
+            .owner(user)
+            .request(null)
+            .build();
 
         Item item1 = Item.builder()
                 .id(1L)
@@ -152,6 +157,21 @@ public class ItemServiceTests {
 
         List<CommentDto> commentsDto = new ArrayList<>();
 
+        User user = User.builder()
+            .id(1L)
+            .name("Николай")
+            .email("nik@mail.ru")
+            .build();
+
+        Item item = Item.builder()
+            .id(1L)
+            .name("item")
+            .description("description item")
+            .available(true)
+            .owner(user)
+            .request(null)
+            .build();
+
         ItemDtoForOwners itemDtoForOwners = ItemDtoForOwners.builder()
                 .id(1L)
                 .name("item")
@@ -175,6 +195,21 @@ public class ItemServiceTests {
     public void getItemsByUserIdTest() {
         when(userRepository.existsById(1L)).thenReturn(true);
         when(itemRepository.existsById(1L)).thenReturn(true);
+
+    User user = User.builder()
+            .id(1L)
+            .name("Николай")
+            .email("nik@mail.ru")
+            .build();
+
+    Item item = Item.builder()
+            .id(1L)
+            .name("item")
+            .description("description item")
+            .available(true)
+            .owner(user)
+            .request(null)
+            .build();
         List<Item> items = List.of(item);
         Mockito.when(itemRepository.findByOwnerId(1L)).thenReturn(items);
         List<ItemDtoForOwners> outputItems = items.stream()
@@ -187,6 +222,20 @@ public class ItemServiceTests {
 
     @Test
     public void findItemsTest() {
+        User user = User.builder()
+                .id(1L)
+                .name("Николай")
+                .email("nik@mail.ru")
+                .build();
+
+        Item item = Item.builder()
+                .id(1L)
+                .name("item")
+                .description("description item")
+                .available(true)
+                .owner(user)
+                .request(null)
+                .build();
         String text = "tekst";
         List<Item> items = List.of(item);
         Mockito.when(itemRepository.search(text)).thenReturn(items);

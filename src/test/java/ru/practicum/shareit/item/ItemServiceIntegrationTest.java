@@ -3,9 +3,11 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -30,18 +32,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ItemServiceIntegrationTest {
     @Autowired
-    private final ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Autowired
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    private final BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
     @Autowired
-    private final CommentRepository commentRepository;
+    private CommentRepository commentRepository;
     @Autowired
-    private final ItemServiceImpl itemService;
+    private ItemServiceImpl itemService;
 
     @Test
     public void getItemsByUserId() {
+
         User user = new User(0L, "userName", "user@user.ru");
         User saveUser = userRepository.save(user);
 
@@ -51,6 +54,9 @@ public class ItemServiceIntegrationTest {
                 .email("nik7@mail.ru")
                 .build();
         User saveUser2 = userRepository.save(user2);
+
+        System.out.println("saveUser.getId()  " + saveUser.getId());
+        System.out.println("saveUser2.getId()  " + saveUser2.getId());
 
         Item item = Item.builder()
                 .id(0L)
