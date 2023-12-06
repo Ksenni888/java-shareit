@@ -50,4 +50,3 @@ public class ItemRequestDtoTest {
         assertThat(content).hasJsonPath("$.items");
     }
 }
-

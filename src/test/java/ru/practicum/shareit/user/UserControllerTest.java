@@ -7,11 +7,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.PathVariable;
 import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -37,16 +35,11 @@ public class UserControllerTest {
 
     @Mock
     private UserService userService;
-    @Autowired
     @Mock
     private UserMapper userMapper;
-    //  @Mock
-    // private UserRepository userRepository;
     @InjectMocks
     UserController userController;
-
     private MockMvc mockMvc;
-
     private final ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
