@@ -51,12 +51,12 @@ public class UserServiceTests {
             .email("nik@mail.ru")
             .build();
 
-    public User inputUserWithOtherName = User.builder()
+    public User UserNewName = User.builder()
             .id(0L)
             .name("Иван")
             .email("nik@mail.ru")
             .build();
-    public User UserWithOtherNameAfterSave = User.builder()
+    public User UserNewNameSave = User.builder()
             .id(1L)
             .name("Иван")
             .email("nik@mail.ru")
@@ -104,10 +104,10 @@ public class UserServiceTests {
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(inputUserAfterSave));
 
-        Mockito.when(userRepository.save(inputUserAfterSave)).thenReturn(UserWithOtherNameAfterSave);
-        Mockito.when(userMapper.toDto(UserWithOtherNameAfterSave)).thenReturn(UserWithOtherNameDto);
+        Mockito.when(userRepository.save(inputUserAfterSave)).thenReturn(UserNewNameSave);
+        Mockito.when(userMapper.toDto(UserNewNameSave)).thenReturn(UserWithOtherNameDto);
 
-        UserDto result = userService.update(inputUserWithOtherName, 1L);
+        UserDto result = userService.update(UserNewName, 1L);
 
         Assertions.assertEquals(UserWithOtherNameDto.getName(), result.getName());
     }
