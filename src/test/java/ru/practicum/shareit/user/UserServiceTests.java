@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.exeption.ExistExeption;
+import ru.practicum.shareit.exeption.ObjectNotFoundException;
 import ru.practicum.shareit.exeption.ValidException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -141,5 +142,14 @@ public class UserServiceTests {
     public void deleteByIdTest() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
         assertDoesNotThrow(() -> userService.deleteById(1L));
+    }
+
+    @Test
+    public void checkUserExistsTest() {
+        Mockito.when(userRepository.existsById(inputUserAfterSave.getId())).thenReturn(false);
+        ObjectNotFoundException exception = Assertions.assertThrows(
+                ObjectNotFoundException.class,
+                () -> userService.checkUserExists(inputUserAfterSave.getId()));
+        assertNotNull(exception.getMessage());
     }
 }

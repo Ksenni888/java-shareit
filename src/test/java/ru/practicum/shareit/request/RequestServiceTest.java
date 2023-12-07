@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.dto.ItemDtoForRequest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -21,6 +22,8 @@ import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -61,6 +64,20 @@ class RequestServiceTest {
         ItemRequestDto result = itemRequestService.findRequestById(1L, 1L);
 
         Assertions.assertEquals(itemRequestDto, result);
+    }
+
+    @Test
+    public void itemRequestMapperTest() {
+        ItemRequestMapper itemMapper = new ItemRequestMapper();
+        User user = new User(1L, "name", "mail@mail.ru");
+        User user2 = new User(2L, "name", "mail2@mail.ru");
+        ItemRequest itemRequest = new ItemRequest(1L, "desc", user2, LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
+        ItemDtoForRequest itemDtoForRequest = new ItemDtoForRequest(1L, "name", "desc", user2.getId(), true);
+        Item item = new Item(1L, "name", "desc", true, user, itemRequest);
+
+        ItemDtoForRequest result = itemMapper.toDtoItem(item);
+
+        Assertions.assertEquals(itemDtoForRequest.getId(), result.getId());
     }
 
     @Test

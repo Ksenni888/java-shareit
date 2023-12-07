@@ -13,9 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.request.controller.ItemRequestController;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.service.ItemRequestService;
-import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -47,8 +45,6 @@ public class RequestControllerTest {
 
     @Test
     public void findRequestByIdTest() throws Exception {
-        User user = new User(1L, "name", "mail@mail.ru");
-        ItemRequest itemRequest = new ItemRequest(1L, "desc", user, LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
         ItemRequestDto itemRequestDto = new ItemRequestDto(1L, LocalDateTime.of(2023, Month.APRIL, 8, 12, 30), "desc", List.of());
 
         Mockito.when(itemRequestService.findRequestById(anyLong(), anyLong())).thenReturn(itemRequestDto);
@@ -75,6 +71,4 @@ public class RequestControllerTest {
                 "    \"description\": \"" + description + "\"\n" +
                 "}";
     }
-
-
 }
