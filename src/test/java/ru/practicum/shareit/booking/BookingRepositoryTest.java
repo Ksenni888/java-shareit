@@ -42,7 +42,6 @@ public class BookingRepositoryTest {
                 LocalDateTime.of(2023, Month.APRIL, 10, 12, 30), item, user, BookingStatus.APPROVED);
         bookingRepository.save(booking);
 
-        List<Booking> allUserBookings = List.of(booking);
         List<Booking> result = bookingRepository.findByBookerId(user.getId(), PageRequest.of(0, 1,
                 Sort.by("start").descending()));
 
