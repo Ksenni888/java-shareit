@@ -7,6 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.exeption.ExistExeption;
+import ru.practicum.shareit.exeption.ValidException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -19,6 +21,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTests {
@@ -30,42 +34,42 @@ public class UserServiceTests {
     @Mock
     private UserMapper userMapper;
 
-    public static User inputUser = User.builder()
+    public User inputUser = User.builder()
             .id(0L)
             .name("Николай")
             .email("nik@mail.ru")
             .build();
 
-    public static User inputUserAfterSave = User.builder()
+    public User inputUserAfterSave = User.builder()
             .id(1L)
             .name("Николай")
             .email("nik@mail.ru")
             .build();
 
-    public static UserDto outputUserDto = UserDto.builder()
+    public UserDto outputUserDto = UserDto.builder()
             .id(1L)
             .name("Николай")
             .email("nik@mail.ru")
             .build();
 
-    public static User inputUserWithOtherName = User.builder()
+    public User inputUserWithOtherName = User.builder()
             .id(0L)
             .name("Иван")
             .email("nik@mail.ru")
             .build();
-    public static User UserWithOtherNameAfterSave = User.builder()
+    public User UserWithOtherNameAfterSave = User.builder()
             .id(1L)
             .name("Иван")
             .email("nik@mail.ru")
             .build();
 
-    public static UserDto UserWithOtherNameDto = UserDto.builder()
+    public UserDto UserWithOtherNameDto = UserDto.builder()
             .id(1L)
             .name("Иван")
             .email("nik@mail.ru")
             .build();
 
-    public static List<User> users = new ArrayList<>();
+    public List<User> users = new ArrayList<>();
 
     @Test
     public void createUserTest() {
@@ -76,6 +80,23 @@ public class UserServiceTests {
         UserDto result = userService.create(inputUser);
 
         Assertions.assertEquals(outputUserDto, result);
+    }
+
+    @Test
+    public void createUserWithIdTest() {
+       ValidException exception = Assertions.assertThrows(
+                ValidException.class,
+                () -> userService.create(inputUserAfterSave));
+        assertNotNull(exception.getMessage());
+    }
+
+    @Test
+    public void createUserWithSameEmailTest() {
+        Mockito.when(userRepository.save(inputUser)).thenThrow(new ExistExeption("Email can't be the same"));
+        ExistExeption exception = Assertions.assertThrows(
+                ExistExeption.class,
+                () -> userService.create(inputUser));
+        assertNotNull(exception.getMessage());
     }
 
     @Test
