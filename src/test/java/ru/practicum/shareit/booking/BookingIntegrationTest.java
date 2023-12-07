@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Transactional
 @SpringBootTest
 @AutoConfigureTestDatabase
-public class BookingServiceIntegrationTest {
+public class BookingIntegrationTest {
     @Autowired
     private BookingRepository bookingRepository;
     @Autowired
