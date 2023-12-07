@@ -31,14 +31,14 @@ public class BookingRepositoryTest {
     @Test
     public void findByBookerIdTest() {
 
-        User user = new User(1L, "name", "mail@mail.ru");
-        User user2 = new User(1L, "name2", "mail2@mail.ru");
+        User user = new User(0L, "name", "mail@mail.ru");
+        User user2 = new User(0L, "name2", "mail2@mail.ru");
         userRepository.save(user);
         userRepository.save(user2);
-        Item item = new Item(1L, "name", "desc", true, user2, null);
+        Item item = new Item(0L, "name", "desc", true, user2, null);
         itemRepository.save(item);
 
-        Booking booking = new Booking(1L, LocalDateTime.of(2023, Month.APRIL, 8, 12, 30),
+        Booking booking = new Booking(0L, LocalDateTime.of(2023, Month.APRIL, 8, 12, 30),
                 LocalDateTime.of(2023, Month.APRIL, 10, 12, 30), item, user, BookingStatus.APPROVED);
         bookingRepository.save(booking);
 
