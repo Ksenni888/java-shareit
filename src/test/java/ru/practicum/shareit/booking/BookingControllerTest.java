@@ -48,17 +48,16 @@ public class BookingControllerTest {
                 .build();
     }
 
-    public static final User user = new User(1L, "userName", "email@mail.ru");
-    public static final Item item = new Item(1L, "itemName", "itemDescription", true, user, null);
-
     @Test
     public void createBookingTest() throws Exception {
+        User user = new User(1L, "userName", "email@mail.ru");
+        Item item = new Item(1L, "itemName", "itemDescription", true, user, null);
+
         String str = "2023-12-28 12:30";
         String str1 = "2023-12-30 12:30";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime start = LocalDateTime.parse(str, formatter);
         LocalDateTime end = LocalDateTime.parse(str1, formatter);
-
 
         Booking booking = new Booking(1L, start,
                 end, item, user, BookingStatus.APPROVED);
