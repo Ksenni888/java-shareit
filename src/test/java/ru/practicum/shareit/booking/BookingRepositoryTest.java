@@ -48,14 +48,4 @@ public class BookingRepositoryTest {
         assertEquals(result.size(), 1);
         assertEquals(result.get(0).getBooker().getId(), 1L);
     }
-
-
-//    List<Booking> findByBookerId(long userId, Pageable pageable);
-//
-//    List<Booking> findByItemIdIn(List<Long> allItemsByUser, Pageable pageable);
-//
-//    List<Booking> findByItemIdAndStatus(long itemId, BookingStatus status);
-//
-//    List<Booking> findByBookerIdAndItemId(long userId, long itemId);
-
 }
