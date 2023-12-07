@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Transactional
 @SpringBootTest
 @AutoConfigureTestDatabase
-public class ItemRequestServiceIntegrationTest {
+public class RequestServiceIntegrationTest {
     @Autowired
     private ItemRequestRepository itemRequestRepository;
     @Autowired

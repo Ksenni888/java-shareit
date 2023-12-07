@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
-class ItemRequestServiceTest {
+class RequestServiceTest {
     @Mock
     private ItemRequestRepository itemRequestRepository;
     @Mock
