@@ -46,6 +46,6 @@ public class BookingRepositoryTest {
                 Sort.by("start").descending()));
 
         assertEquals(result.size(), 1);
-        assertEquals(result.get(0).getBooker().getId(), 1L);
+        assertEquals(result.get(0).getBooker().getId(), user.getId());
     }
 }
