@@ -52,16 +52,12 @@ public class BookingControllerTest {
     public void createBookingTest() throws Exception {
         User user = new User(1L, "userName", "email@mail.ru");
         Item item = new Item(1L, "itemName", "itemDescription", true, user, null);
-
         String str = "2023-12-28 12:30";
         String str1 = "2023-12-30 12:30";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime start = LocalDateTime.parse(str, formatter);
         LocalDateTime end = LocalDateTime.parse(str1, formatter);
-
-        Booking booking = new Booking(1L, start,
-                end, item, user, BookingStatus.APPROVED);
-
+        Booking booking = new Booking(1L, start, end, item, user, BookingStatus.APPROVED);
         String addBooking = createBookingDtoJson(1L, start, end);
 
         Mockito.when(bookingService.createBooking(anyLong(), any())).thenReturn(booking);
@@ -70,11 +66,11 @@ public class BookingControllerTest {
                         .header("X-Sharer-User-Id", booking.getBooker().getId())
                         .content(addBooking)
                         .contentType(MediaType.APPLICATION_JSON))
-
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$..start[0]").value(2023));
+                .andExpect(jsonPath("$.start[0]").value(2023))
+                .andExpect(jsonPath("$.start[1]").value(12));
     }
 
     public static String createBookingDtoJson(long id, LocalDateTime start, LocalDateTime end) {
