@@ -12,16 +12,25 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.practicum.shareit.booking.dto.BookingDto2;
 import ru.practicum.shareit.item.controller.ItemController;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoForOwners;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
+
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -47,14 +56,25 @@ public class ItemControllerTest {
                 .build();
     }
 
-    public static final User user = new User(1, "userName", "email");
-    public static final String itemName = "Дрель";
-    public static final String itemDescription = "Простая дрель";
-    public static final boolean available = true;
-    public static final ItemDto itemDto = new ItemDto(1, itemName, itemDescription, available, 0);
-    public static final Item item = new Item(1, itemName, itemDescription, true, user, null);
-    public static final Item itemUpd = new Item(1, "itemName2", "itemDescription2", true, user, null);
-    public static final ItemDto itemUpdDto = new ItemDto(1, "itemName2", "itemDescription2", true, 0);
+    private User user = new User(1, "userName", "email");
+    private String itemName = "Дрель";
+    private String itemDescription = "Простая дрель";
+    private boolean available = true;
+    private ItemDto itemDto = new ItemDto(1, itemName, itemDescription, available, 0);
+    private Item item = new Item(1, itemName, itemDescription, true, user, null);
+    private Item itemUpd = new Item(1, "itemName2", "itemDescription2", true, user, null);
+    private ItemDto itemUpdDto = new ItemDto(1, "itemName2", "itemDescription2", true, 0);
+    private LocalDateTime start = LocalDateTime.of(2024, Month.APRIL, 8, 12, 30);
+    private LocalDateTime end = LocalDateTime.of(2024, Month.APRIL, 12, 12, 30);
+    private LocalDateTime start1 = LocalDateTime.of(2023, Month.APRIL, 8, 12, 30);
+    private LocalDateTime end1 = LocalDateTime.of(2023, Month.APRIL, 12, 12, 30);
+    CommentDto commentDto = new CommentDto();
+    List<CommentDto> comments = List.of(commentDto);
+    ItemRequest request = new ItemRequest(1L, "description", user, start);
+    BookingDto2 lastBooking = new BookingDto2(1L, start1, end1, user.getId());
+    BookingDto2 nextBooking = new BookingDto2(2L, start, end, user.getId());
+    ItemDtoForOwners itemDtoForOwners = new ItemDtoForOwners(1L, "name", "description",
+            true, request.getId(), lastBooking, nextBooking, comments);
 
     @Test
     public void create() throws Exception {
@@ -92,7 +112,67 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.description").value("itemDescription2"))
                 .andExpect(jsonPath("$.available").value(available))
                 .andExpect(jsonPath("$.requestId").value(0));
+    }
 
+    @Test
+    public void findById() throws Exception {
+
+        Mockito.when(itemService.findById(anyLong(), anyLong())).thenReturn(itemDtoForOwners);
+
+        String itemForOunersUpdS = createItemForOunersJson("name", "description", lastBooking, nextBooking, true);
+
+        mockMvc.perform(get("/items" + "/{itemId}", itemDtoForOwners.getId())
+                        .header("X-Sharer-User-Id", user.getId())
+                        .content(itemForOunersUpdS)
+                        .contentType(MediaType.APPLICATION_JSON))
+
+                .andDo(print())
+                .andExpect(status().isOk())
+
+                .andExpect(jsonPath("$.name").value("name"))
+                .andExpect(jsonPath("$.description").value("description"))
+                .andExpect(jsonPath("$.available").value(available))
+                .andExpect(jsonPath("$.lastBooking.id").value(1L))
+                .andExpect(jsonPath("$.nextBooking.id").value(2L));
+    }
+
+    @Test
+    public void getItemsByUserId() throws Exception {
+        List<ItemDtoForOwners> allItemsDto = List.of(itemDtoForOwners);
+        Mockito.when(itemService.getItemsByUserId(user.getId())).thenReturn(allItemsDto);
+        String itemDtoForOwners = createItemForOunersJson("name", "description", lastBooking, nextBooking, true);
+
+        mockMvc.perform(get("/items")
+                        .header("X-Sharer-User-Id", user.getId())
+                        .content(List.of(itemDtoForOwners).toString())
+                        .contentType(MediaType.APPLICATION_JSON))
+
+                .andDo(print())
+                .andExpect(status().isOk())
+
+                .andExpect(jsonPath("$[0].name").value("name"))
+                .andExpect(jsonPath("$[0].description").value("description"))
+                .andExpect(jsonPath("$[0].available").value(available))
+                .andExpect(jsonPath("$[0].lastBooking.id").value(1L))
+                .andExpect(jsonPath("$[0].nextBooking.id").value(2L));
+    }
+
+    public static String createItemDtoForOwnersJson(String name, String description, boolean available) {
+        return "{\n" +
+                "    \"name\": \"" + name + "\",\n" +
+                "    \"description\": \"" + description + "\",\n" +
+                "    \"available\": " + available + "\n" +
+                "}";
+    }
+
+    public static String createItemForOunersJson(String name, String description, BookingDto2 lastBooking, BookingDto2 nextBooking, boolean available) {
+        return "{\n" +
+                "    \"name\": \"" + name + "\",\n" +
+                "    \"description\": \"" + description + "\",\n" +
+                "    \"lastBooking\": \"" + lastBooking + "\",\n" +
+                "    \"nextBooking\": \"" + nextBooking + "\",\n" +
+                "    \"available\": " + available + "\n" +
+                "}";
     }
 
     public static String createItemDtoJson(String name, String description, boolean available) {
