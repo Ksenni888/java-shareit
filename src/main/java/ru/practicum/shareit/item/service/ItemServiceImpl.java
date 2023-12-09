@@ -44,7 +44,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemDto create(long userId, ItemDto itemDto) {
-
         if (itemDto.getId() != 0) {
             log.warn("id must be 0");
             throw new ValidException("id must be 0");
@@ -76,47 +75,45 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public Item update(long userId, Item item, long itemId) {
-
         if (!itemRepository.existsById(itemId)) {
             throw new ObjectNotFoundException("This item not found");
         }
 
-        Item savedItem = itemRepository.getReferenceById(itemId);
+        Item baseItem = itemRepository.getReferenceById(itemId);
 
         if (item.getAvailable() != null) {
-            savedItem.setAvailable(item.getAvailable());
+            baseItem.setAvailable(item.getAvailable());
         }
 
         if (item.getName() != null) {
-            savedItem.setName(item.getName());
+            baseItem.setName(item.getName());
         }
 
         if (item.getDescription() != null) {
-            savedItem.setDescription(item.getDescription());
+            baseItem.setDescription(item.getDescription());
         }
 
-        if (savedItem.getOwner().getId() != userId) {
+        if (baseItem.getOwner().getId() != userId) {
             throw new ObjectNotFoundException("Items can changes only owners");
         }
 
-        return itemRepository.save(savedItem);
+        return itemRepository.save(baseItem);
     }
 
     @Override
     public ItemDtoForOwners findById(long itemId, long userId) {
-
         if (!itemRepository.existsById(itemId)) {
             throw new ObjectNotFoundException("Item not found");
         }
 
-        List<Booking> saveBookings = bookingRepository.findByItemIdAndStatus(itemId, BookingStatus.APPROVED);
+        List<Booking> baseBookings = bookingRepository.findByItemIdAndStatus(itemId, BookingStatus.APPROVED);
 
-        Booking lastBooking = saveBookings.stream()
+        Booking lastBooking = baseBookings.stream()
                 .filter(x -> x.getEnd().isBefore(LocalDateTime.now()) ||
                         ((x.getStart().isBefore(LocalDateTime.now())) && (x.getEnd().isAfter(LocalDateTime.now()))))
                 .max((Comparator.comparing(Booking::getEnd))).orElse(null);
 
-        Booking nextBooking = saveBookings.stream()
+        Booking nextBooking = baseBookings.stream()
                 .filter(x -> x.getStart().isAfter(LocalDateTime.now()))
                 .min((Comparator.comparing(Booking::getStart))).orElse(null);
 
@@ -158,7 +155,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Comments addComment(long userId, long itemId, CommentDto commentDto) {
-
         if (commentDto.getText().isBlank()) {
             throw new ValidException("This field can't be empty, write the text");
         }

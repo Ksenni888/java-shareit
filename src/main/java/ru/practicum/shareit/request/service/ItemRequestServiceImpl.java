@@ -33,20 +33,18 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestDto findRequestById(long userId, long requestId) {
-
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
         }
         if (!itemRequestRepository.existsById(requestId)) {
             throw new ObjectNotFoundException("Request not found");
         }
-        ItemRequest saveItemRequest = itemRequestRepository.findById(requestId).orElseThrow();
-        return itemRequestMapper.toDtoRequest(saveItemRequest, itemRepository.findByRequestId(saveItemRequest.getId()));
+        ItemRequest baseItemRequest = itemRequestRepository.findById(requestId).orElseThrow();
+        return itemRequestMapper.toDtoRequest(baseItemRequest, itemRepository.findByRequestId(baseItemRequest.getId()));
     }
 
     @Override
     public ItemRequest addRequest(long userId, ItemRequestDto itemRequestDto) {
-
         if (itemRequestDto.getId() != 0) {
             log.warn("id must be 0");
             throw new ValidException("id must be 0");
@@ -57,29 +55,27 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         }
 
         User user = userRepository.findById(userId).orElseThrow();
-        ItemRequest saveItemRequest = itemRequestMapper.toRequest(itemRequestDto, user);
+        ItemRequest baseItemRequest = itemRequestMapper.toRequest(itemRequestDto, user);
 
-        return itemRequestRepository.save(saveItemRequest);
+        return itemRequestRepository.save(baseItemRequest);
     }
 
     @Override
     public List<ItemRequestDto> getRequest(long userId) {
-
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
         }
-        List<ItemRequest> saveItemRequests = itemRequestRepository.findByUserId(userId);
-        if (saveItemRequests.isEmpty()) {
+        List<ItemRequest> baseItemRequests = itemRequestRepository.findByUserId(userId);
+        if (baseItemRequests.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return saveItemRequests.stream().map(x -> itemRequestMapper.toDtoRequest(x, itemRepository.findByRequestId(x.getId())))
+        return baseItemRequests.stream().map(x -> itemRequestMapper.toDtoRequest(x, itemRepository.findByRequestId(x.getId())))
                 .sorted(Comparator.comparing(ItemRequestDto::getCreated)).collect(Collectors.toList());
     }
 
     @Override
     public List<ItemRequestDto> getAllRequests(long userId, Pageable pageable) {
-
         return itemRequestRepository.findAll(pageable).stream()
                 .filter(x -> x.getUser().getId() != userId)
                 .map(x -> itemRequestMapper.toDtoRequest(x, itemRepository.findByRequestId(x.getId())))

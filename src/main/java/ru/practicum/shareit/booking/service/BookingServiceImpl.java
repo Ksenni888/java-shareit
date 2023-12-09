@@ -38,14 +38,13 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Booking createBooking(long userId, BookingDto bookingDto) {
+        LocalDateTime startTime = bookingDto.getStart();
 
-        LocalDateTime saveStartTime = bookingDto.getStart();
-
-        if (saveStartTime.isAfter(bookingDto.getEnd())) {
+        if (startTime.isAfter(bookingDto.getEnd())) {
             throw new ValidException("Data start can't be later then end");
         }
 
-        if (saveStartTime.isEqual(bookingDto.getEnd())) {
+        if (startTime.isEqual(bookingDto.getEnd())) {
             throw new ValidException("Dates start and end can be different");
         }
 
@@ -54,38 +53,36 @@ public class BookingServiceImpl implements BookingService {
             throw new ObjectNotFoundException("This user is not exist");
         }
 
-        long saveItemId = bookingDto.getItemId();
+        long baseItemId = bookingDto.getItemId();
 
-        if (!itemRepository.existsById(saveItemId)) {
+        if (!itemRepository.existsById(baseItemId)) {
             log.warn("This item is not exist");
             throw new ObjectNotFoundException("This item is not exist");
         }
 
-        Item itemSave = itemRepository.findById(saveItemId).orElseThrow();
-
-        if (itemRepository.findById(saveItemId).isEmpty()) {
+        Item baseItem = itemRepository.findById(baseItemId).orElseThrow();
+        if (itemRepository.findById(baseItemId).isEmpty()) {
             throw new ObjectNotFoundException("Item not found");
         }
 
-        if (!itemSave.getAvailable()) {
+        if (!baseItem.getAvailable()) {
             throw new ValidException("Item is not available");
         }
 
-        if (itemSave.getOwner().getId() == userId) {
+        if (baseItem.getOwner().getId() == userId) {
 
             throw new ObjectNotFoundException("You can't send request for your item");
         }
 
         User user = userRepository.findById(userId).orElseThrow();
-        Booking saveBooking = bookingMapper.toBooking(bookingDto, user, itemSave);
+        Booking baseBooking = bookingMapper.toBooking(bookingDto, user, baseItem);
 
-        return bookingRepository.save(saveBooking);
+        return bookingRepository.save(baseBooking);
     }
 
     @Transactional
     @Override
     public Booking checkRequest(long userId, long bookingId, String approved) {
-
         if (approved.isBlank()) {
             throw new ValidException("approved must be true/false");
         }
@@ -98,33 +95,33 @@ public class BookingServiceImpl implements BookingService {
             throw new ObjectNotFoundException("This booking not found");
         }
 
-        Booking saveBooking = bookingRepository.findById(bookingId).orElseThrow();
+        Booking baseBooking = bookingRepository.findById(bookingId).orElseThrow();
 
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
         }
 
-        if (saveBooking.getItem().getOwner().getId() != userId) {
+        if (baseBooking.getItem().getOwner().getId() != userId) {
             log.warn("Change status can only owner");
             throw new ObjectNotFoundException("Change status can only owner");
         }
 
-        if (saveBooking.getStatus().equals(BookingStatus.APPROVED)) {
+        if (baseBooking.getStatus().equals(BookingStatus.APPROVED)) {
             throw new ValidException("This booking cheked");
         }
 
         switch (approved) {
             case "true":
-                if (!saveBooking.getItem().getAvailable()) {
-                    saveBooking.setStatus(BookingStatus.WAITING);
+                if (!baseBooking.getItem().getAvailable()) {
+                    baseBooking.setStatus(BookingStatus.WAITING);
                 }
-                saveBooking.setStatus(BookingStatus.APPROVED);
+                baseBooking.setStatus(BookingStatus.APPROVED);
 
-                return saveBooking;
+                return baseBooking;
 
             case "false":
-                saveBooking.setStatus(BookingStatus.REJECTED);
-                return saveBooking;
+                baseBooking.setStatus(BookingStatus.REJECTED);
+                return baseBooking;
 
             default:
                 throw new ValidException("Approved must be true or false");
@@ -140,19 +137,18 @@ public class BookingServiceImpl implements BookingService {
             throw new ObjectNotFoundException("This booking not found");
         }
 
-        Booking saveBooking = bookingRepository.findById(bookingId).orElseThrow();
+        Booking baseBooking = bookingRepository.findById(bookingId).orElseThrow();
 
-        if (saveBooking.getBooker().getId() != userId
-                && (saveBooking.getItem().getOwner().getId() != userId)) {
+        if (baseBooking.getBooker().getId() != userId
+                && (baseBooking.getItem().getOwner().getId() != userId)) {
             throw new ObjectNotFoundException("Get information about booking can owner item or booker only");
         }
 
-        return saveBooking;
+        return baseBooking;
     }
 
     @Override
     public List<Booking> getBookingsByStatus(long userId, String state, Pageable pageable) {
-
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("This user not exist");
         }
@@ -163,7 +159,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<Booking> getUserBookings(long ownerId, String state, Pageable pageable) {
-
         List<Item> itemByOwnerId = itemRepository.findByOwnerId(ownerId);
 
         if (itemByOwnerId.isEmpty()) {
@@ -173,52 +168,51 @@ public class BookingServiceImpl implements BookingService {
         List<Long> allItemsByUser = itemByOwnerId.stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());
-        List<Booking> saveBooking = bookingRepository.findByItemIdIn(allItemsByUser, pageable);
+        List<Booking> baseBooking = bookingRepository.findByItemIdIn(allItemsByUser, pageable);
 
-        return checkState(saveBooking, state);
+        return checkState(baseBooking, state);
 
     }
 
-    public List<Booking> checkState(List<Booking> saveBooking, String state) {
-
+    public List<Booking> checkState(List<Booking> baseBooking, String state) {
         switch (state) {
             case "ALL":
                 log.info("Get list by status ALL");
-                return saveBooking.stream()
+                return baseBooking.stream()
                         .sorted((Comparator.comparing(Booking::getStart)).reversed())
                         .collect(Collectors.toList());
 
             case "CURRENT":
                 log.info("Get list by status CURRENT");
-                return saveBooking.stream()
+                return baseBooking.stream()
                         .filter(x -> x.getEnd().isAfter(LocalDateTime.now()) && x.getStart().isBefore(LocalDateTime.now()))
                         .sorted((Comparator.comparing(Booking::getStart)).reversed())
                         .collect(Collectors.toList());
 
             case "PAST":
                 log.info("Get list by status PAST");
-                return saveBooking.stream()
+                return baseBooking.stream()
                         .filter(x -> x.getEnd().isBefore(LocalDateTime.now()))
                         .sorted((Comparator.comparing(Booking::getStart)).reversed())
                         .collect(Collectors.toList());
 
             case "FUTURE":
                 log.info("Get list by status FUTURE");
-                return saveBooking.stream()
+                return baseBooking.stream()
                         .filter(x -> x.getStart().isAfter(LocalDateTime.now()))
                         .sorted((Comparator.comparing(Booking::getStart)).reversed())
                         .collect(Collectors.toList());
 
             case "WAITING":
                 log.info("Get list by status WAITING");
-                return saveBooking.stream()
+                return baseBooking.stream()
                         .filter(x -> x.getStatus().equals(BookingStatus.WAITING))
                         .sorted((Comparator.comparing(Booking::getStart)).reversed())
                         .collect(Collectors.toList());
 
             case "REJECTED":
                 log.info("Get list by status REJECTED");
-                return saveBooking.stream()
+                return baseBooking.stream()
                         .filter(x -> x.getStatus().equals(BookingStatus.REJECTED))
                         .sorted((Comparator.comparing(Booking::getStart)).reversed())
                         .collect(Collectors.toList());

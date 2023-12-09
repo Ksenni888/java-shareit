@@ -12,6 +12,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -20,14 +23,19 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Month;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 
 @ExtendWith(MockitoExtension.class)
 public class BookingControllerTest {
@@ -52,11 +60,8 @@ public class BookingControllerTest {
     public void createBookingTest() throws Exception {
         User user = new User(1L, "userName", "email@mail.ru");
         Item item = new Item(1L, "itemName", "itemDescription", true, user, null);
-        String str = "2023-12-28 12:30";
-        String str1 = "2023-12-30 12:30";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime start = LocalDateTime.parse(str, formatter);
-        LocalDateTime end = LocalDateTime.parse(str1, formatter);
+        LocalDateTime start = LocalDateTime.of(2024, Month.APRIL, 8, 12, 30);
+        LocalDateTime end = LocalDateTime.of(2024, Month.APRIL, 12, 12, 30);
         Booking booking = new Booking(1L, start, end, item, user, BookingStatus.APPROVED);
         String addBooking = createBookingDtoJson(1L, start, end);
 
@@ -69,8 +74,68 @@ public class BookingControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.start[0]").value(2023))
-                .andExpect(jsonPath("$.start[1]").value(12));
+                .andExpect(jsonPath("$.start[0]").value(2024))
+                .andExpect(jsonPath("$.start[1]").value(4));
+    }
+
+    @Test
+    public void getBookingTest() throws Exception {
+        User user = new User(1L, "userName", "email@mail.ru");
+        Item item = new Item(1L, "itemName", "itemDescription", true, user, null);
+        LocalDateTime start = LocalDateTime.of(2024, Month.APRIL, 8, 12, 30);
+        LocalDateTime end = LocalDateTime.of(2024, Month.APRIL, 12, 12, 30);
+        Booking booking = new Booking(1L, start, end, item, user, BookingStatus.APPROVED);
+        String addBooking = createBookingDtoJson(1L, start, end);
+
+
+        Mockito.when(bookingService.getBooking(anyLong(), anyLong())).thenReturn(booking);
+
+        mockMvc.perform(get("/bookings/{bookingId}", booking.getId())
+                        .header("X-Sharer-User-Id", booking.getBooker().getId())
+                        .content(addBooking)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.start[0]").value(2024))
+                .andExpect(jsonPath("$.start[1]").value(4));
+
+    }
+
+    @Test
+    public void checkRequestTest() throws Exception {
+        String approved = "true";
+        User user = new User(1L, "userName", "email@mail.ru");
+        Item item = new Item(1L, "itemName", "itemDescription", true, user, null);
+        LocalDateTime start = LocalDateTime.of(2024, Month.APRIL, 8, 12, 30);
+        LocalDateTime end = LocalDateTime.of(2024, Month.APRIL, 12, 12, 30);
+        Booking booking = new Booking(1L, start, end, item, user, BookingStatus.APPROVED);
+        String addBooking = createBookingDtoJson1(1L, start, end, BookingStatus.APPROVED);
+
+
+        Mockito.when(bookingService.checkRequest(anyLong(), anyLong(), anyString())).thenReturn(booking);
+
+        mockMvc.perform(patch("/bookings/{bookingId}", booking.getId())
+                        .header("X-Sharer-User-Id", item.getOwner().getId())
+                        .param("approved", String.valueOf(true))
+                        .content(addBooking)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.status").value("APPROVED"))
+                .andExpect(jsonPath("$.start[0]").value(2024))
+                .andExpect(jsonPath("$.start[1]").value(4));
+
+    }
+
+    public static String createBookingDtoJson1(long id, LocalDateTime start, LocalDateTime end, BookingStatus status) {
+        return "{\n" +
+                "    \"id\": \"" + id + "\",\n" +
+                "    \"status\": \"" + status + "\",\n" +
+                "    \"start\": \"" + start + "\",\n" +
+                "    \"end\": \"" + end + "\"\n" +
+                "}";
     }
 
     public static String createBookingDtoJson(long id, LocalDateTime start, LocalDateTime end) {

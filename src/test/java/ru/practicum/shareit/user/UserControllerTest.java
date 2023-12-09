@@ -90,19 +90,19 @@ public class UserControllerTest {
     @Test
     public void getAllTest() throws Exception {
 
-        List<UserDto> saveUserDto = List.of(userDto);
+        List<UserDto> baseUserDto = List.of(userDto);
 
         when(userService.getAll())
-                .thenReturn(saveUserDto);
+                .thenReturn(baseUserDto);
 
         mockMvc.perform(get("/users"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id").value(saveUserDto.get(0).getId()))
-                .andExpect(jsonPath("$[0].name").value(saveUserDto.get(0).getName()))
-                .andExpect(jsonPath("$[0].email").value(saveUserDto.get(0).getEmail()));
+                .andExpect(jsonPath("$[0].id").value(baseUserDto.get(0).getId()))
+                .andExpect(jsonPath("$[0].name").value(baseUserDto.get(0).getName()))
+                .andExpect(jsonPath("$[0].email").value(baseUserDto.get(0).getEmail()));
     }
 
     @Test

@@ -43,54 +43,51 @@ public class BookingIntegrationTest {
     public void getUserBookingsTest() {
         userRepository.deleteAll();
         User user = new User(0L, "userName", "user3@user.ru");
-        User saveUser = userRepository.save(user);
+        User baseUser = userRepository.save(user);
 
         User user2 = User.builder()
                 .id(0L)
                 .name("Нико")
                 .email("nik90@mail.ru")
                 .build();
-        User saveUser2 = userRepository.save(user2);
-
-        System.out.println("saveUser.getId()*****************************" + saveUser.getId());
-        System.out.println("saveUser2.getId()*****************************" + saveUser2.getId());
+        User baseUser2 = userRepository.save(user2);
 
         Item item = Item.builder()
                 .id(0L)
                 .name("item")
                 .description("description item")
                 .available(true)
-                .owner(saveUser)
+                .owner(baseUser)
                 .request(null)
                 .build();
         Item item1 = itemRepository.save(item);
 
-        Booking saveBooking = new Booking();
-        saveBooking.setId(0L);
-        saveBooking.setStart(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
-        saveBooking.setEnd(LocalDateTime.of(2023, Month.APRIL, 10, 12, 30));
-        saveBooking.setBooker(saveUser2);
-        saveBooking.setItem(item1);
-        saveBooking.setStatus(BookingStatus.APPROVED);
+        Booking baseBooking = new Booking();
+        baseBooking.setId(0L);
+        baseBooking.setStart(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
+        baseBooking.setEnd(LocalDateTime.of(2023, Month.APRIL, 10, 12, 30));
+        baseBooking.setBooker(baseUser2);
+        baseBooking.setItem(item1);
+        baseBooking.setStatus(BookingStatus.APPROVED);
 
         Comments comments = new Comments();
         comments.setText("srzgezb");
         comments.setCreated(LocalDateTime.of(2023, Month.APRIL, 11, 12, 30));
         comments.setItem(item1);
-        comments.setAuthor(saveUser2);
+        comments.setAuthor(baseUser2);
 
-        bookingRepository.save(saveBooking);
+        bookingRepository.save(baseBooking);
         commentRepository.save(comments);
 
-        List<Item> itemByOwnerId = itemRepository.findByOwnerId(saveUser.getId());
+        List<Item> itemByOwnerId = itemRepository.findByOwnerId(baseUser.getId());
 
         List<Long> allItemsByUser = itemByOwnerId.stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());
-        List<Booking> saveBooking1 = bookingRepository.findByItemIdIn(allItemsByUser, PageRequest.of(0, 1, Sort.by("start").descending()));
+        List<Booking> baseBooking1 = bookingRepository.findByItemIdIn(allItemsByUser, PageRequest.of(0, 1, Sort.by("start").descending()));
 
-        List<Booking> allUserBookings = bookingService.checkState(saveBooking1, "ALL");
-        List<Booking> result = bookingService.getUserBookings(saveUser.getId(), "ALL", PageRequest.of(0, 1, Sort.by("start").descending()));
+        List<Booking> allUserBookings = bookingService.checkState(baseBooking1, "ALL");
+        List<Booking> result = bookingService.getUserBookings(baseUser.getId(), "ALL", PageRequest.of(0, 1, Sort.by("start").descending()));
 
         Assertions.assertEquals(allUserBookings.get(0).getBooker().getId(), result.get(0).getBooker().getId());
     }

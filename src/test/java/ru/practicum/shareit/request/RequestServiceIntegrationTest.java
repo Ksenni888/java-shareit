@@ -49,48 +49,48 @@ public class RequestServiceIntegrationTest {
     @Test
     public void getAllRequestsTest() {
         User user = new User(0L, "userName", "user@user.ru");
-        User saveUser = userRepository.save(user);
+        User baseUser = userRepository.save(user);
 
         User user2 = User.builder()
                 .id(0L)
                 .name("Нико")
                 .email("nik7@mail.ru")
                 .build();
-        User saveUser2 = userRepository.save(user2);
+        User baseUser2 = userRepository.save(user2);
 
         Item item = Item.builder()
                 .id(0L)
                 .name("item")
                 .description("description item")
                 .available(true)
-                .owner(saveUser)
+                .owner(baseUser)
                 .request(null)
                 .build();
         Item item1 = itemRepository.save(item);
 
-        Booking saveBooking = new Booking();
-        saveBooking.setId(0L);
-        saveBooking.setStart(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
-        saveBooking.setEnd(LocalDateTime.of(2023, Month.APRIL, 10, 12, 30));
-        saveBooking.setBooker(saveUser2);
-        saveBooking.setItem(item1);
-        saveBooking.setStatus(BookingStatus.APPROVED);
+        Booking baseBooking = new Booking();
+        baseBooking.setId(0L);
+        baseBooking.setStart(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
+        baseBooking.setEnd(LocalDateTime.of(2023, Month.APRIL, 10, 12, 30));
+        baseBooking.setBooker(baseUser2);
+        baseBooking.setItem(item1);
+        baseBooking.setStatus(BookingStatus.APPROVED);
 
         Comments comments = new Comments();
         comments.setText("srzgezb");
         comments.setCreated(LocalDateTime.of(2023, Month.APRIL, 11, 12, 30));
         comments.setItem(item1);
-        comments.setAuthor(saveUser);
+        comments.setAuthor(baseUser);
 
-        bookingRepository.save(saveBooking);
+        bookingRepository.save(baseBooking);
         commentRepository.save(comments);
 
         List<ItemRequestDto> allRequesrs = itemRequestRepository.findAll(PageRequest.of(0, 1, Sort.by("created").descending())).stream()
-                .filter(x -> x.getUser().getId() != saveUser2.getId())
+                .filter(x -> x.getUser().getId() != baseUser2.getId())
                 .map(x -> itemRequestMapper.toDtoRequest(x, itemRepository.findByRequestId(x.getId())))
                 .collect(Collectors.toList());
 
-        List<ItemRequestDto> result = itemRequestService.getAllRequests(saveUser.getId(), PageRequest.of(0, 1, Sort.by("created").descending()));
+        List<ItemRequestDto> result = itemRequestService.getAllRequests(baseUser.getId(), PageRequest.of(0, 1, Sort.by("created").descending()));
 
         Assertions.assertEquals(allRequesrs, result);
     }

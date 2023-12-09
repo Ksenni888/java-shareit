@@ -45,16 +45,16 @@ public class UserServiceImpl implements UserService {
     public UserDto update(User user, long userId) {
         checkUserExists(userId);
 
-        User saveUser = userRepository.findById(userId).orElseThrow();
+        User baseUser = userRepository.findById(userId).orElseThrow();
         if (user.getEmail() != null) {
-            saveUser.setEmail(user.getEmail());
+            baseUser.setEmail(user.getEmail());
         }
 
         if (user.getName() != null) {
-            saveUser.setName(user.getName());
+            baseUser.setName(user.getName());
         }
 
-        return userMapper.toDto(userRepository.save(saveUser));
+        return userMapper.toDto(userRepository.save(baseUser));
     }
 
     @Override

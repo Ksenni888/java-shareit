@@ -40,7 +40,7 @@ public class UserServiceTests {
             .email("nik@mail.ru")
             .build();
 
-    public User inputUserAfterSave = User.builder()
+    public User inputUserAfter = User.builder()
             .id(1L)
             .name("Николай")
             .email("nik@mail.ru")
@@ -58,7 +58,7 @@ public class UserServiceTests {
             .email("nik@mail.ru")
             .build();
 
-    public User userNewNameSave = User.builder()
+    public User userNewNameBase = User.builder()
             .id(1L)
             .name("Иван")
             .email("nik@mail.ru")
@@ -75,8 +75,8 @@ public class UserServiceTests {
     @Test
     public void createUserTest() {
 
-        Mockito.when(userRepository.save(inputUser)).thenReturn(inputUserAfterSave);
-        Mockito.when(userMapper.toDto(inputUserAfterSave)).thenReturn(outputUserDto);
+        Mockito.when(userRepository.save(inputUser)).thenReturn(inputUserAfter);
+        Mockito.when(userMapper.toDto(inputUserAfter)).thenReturn(outputUserDto);
 
         UserDto result = userService.create(inputUser);
 
@@ -87,7 +87,7 @@ public class UserServiceTests {
     public void createUserWithIdTest() {
        ValidException exception = Assertions.assertThrows(
                 ValidException.class,
-                () -> userService.create(inputUserAfterSave));
+                () -> userService.create(inputUserAfter));
         assertNotNull(exception.getMessage());
     }
 
@@ -104,10 +104,10 @@ public class UserServiceTests {
     public void updateUserTest() {
 
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
-        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(inputUserAfterSave));
+        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(inputUserAfter));
 
-        Mockito.when(userRepository.save(inputUserAfterSave)).thenReturn(userNewNameSave);
-        Mockito.when(userMapper.toDto(userNewNameSave)).thenReturn(userWithOtherNameDto);
+        Mockito.when(userRepository.save(inputUserAfter)).thenReturn(userNewNameBase);
+        Mockito.when(userMapper.toDto(userNewNameBase)).thenReturn(userWithOtherNameDto);
 
         UserDto result = userService.update(userNewName, 1L);
 
@@ -116,7 +116,7 @@ public class UserServiceTests {
 
     @Test
     public void getAllUsersTest() {
-        users.add(inputUserAfterSave);
+        users.add(inputUserAfter);
         Mockito.when(userRepository.findAll()).thenReturn(users);
         List<UserDto> usersDto = users.stream()
                 .map(x -> userMapper.toDto(x))
@@ -131,11 +131,11 @@ public class UserServiceTests {
     public void getByIdTest() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
 
-        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(inputUserAfterSave));
+        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(inputUserAfter));
 
         User result = userService.getById(1L);
 
-        Assertions.assertEquals(inputUserAfterSave, result);
+        Assertions.assertEquals(inputUserAfter, result);
     }
 
     @Test
@@ -146,10 +146,10 @@ public class UserServiceTests {
 
     @Test
     public void checkUserExistsTest() {
-        Mockito.when(userRepository.existsById(inputUserAfterSave.getId())).thenReturn(false);
+        Mockito.when(userRepository.existsById(inputUserAfter.getId())).thenReturn(false);
         ObjectNotFoundException exception = Assertions.assertThrows(
                 ObjectNotFoundException.class,
-                () -> userService.checkUserExists(inputUserAfterSave.getId()));
+                () -> userService.checkUserExists(inputUserAfter.getId()));
         assertNotNull(exception.getMessage());
     }
 }

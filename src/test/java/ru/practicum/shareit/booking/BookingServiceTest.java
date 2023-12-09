@@ -57,21 +57,21 @@ public class BookingServiceTest {
         bookingDto.setItemId(1L);
         bookingDto.setStatus(null);
 
-        Booking saveBooking = new Booking();
-        saveBooking.setId(0L);
-        saveBooking.setItem(item);
-        saveBooking.setStart(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
-        saveBooking.setEnd(LocalDateTime.of(2023, Month.APRIL, 12, 12, 30));
-        saveBooking.setBooker(user);
-        saveBooking.setStatus(BookingStatus.WAITING);
+        Booking baseBooking = new Booking();
+        baseBooking.setId(0L);
+        baseBooking.setItem(item);
+        baseBooking.setStart(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
+        baseBooking.setEnd(LocalDateTime.of(2023, Month.APRIL, 12, 12, 30));
+        baseBooking.setBooker(user);
+        baseBooking.setStatus(BookingStatus.WAITING);
 
-        Booking saveBooking1 = new Booking();
-        saveBooking.setId(1L);
-        saveBooking.setItem(item);
-        saveBooking.setStart(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
-        saveBooking.setEnd(LocalDateTime.of(2023, Month.APRIL, 12, 12, 30));
-        saveBooking.setBooker(user);
-        saveBooking.setStatus(BookingStatus.WAITING);
+        Booking baseBooking1 = new Booking();
+        baseBooking1.setId(1L);
+        baseBooking1.setItem(item);
+        baseBooking1.setStart(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
+        baseBooking1.setEnd(LocalDateTime.of(2023, Month.APRIL, 12, 12, 30));
+        baseBooking1.setBooker(user);
+        baseBooking1.setStatus(BookingStatus.WAITING);
 
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
         Mockito.when(itemRepository.existsById(1L)).thenReturn(true);
@@ -79,12 +79,12 @@ public class BookingServiceTest {
         Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
 
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        Mockito.when(bookingMapper.toBooking(bookingDto, user, item)).thenReturn(saveBooking);
+        Mockito.when(bookingMapper.toBooking(bookingDto, user, item)).thenReturn(baseBooking);
 
-        Mockito.when(bookingRepository.save(saveBooking)).thenReturn(saveBooking1);
+        Mockito.when(bookingRepository.save(baseBooking)).thenReturn(baseBooking1);
 
         Booking result = bookingService.createBooking(1L, bookingDto);
-        Assertions.assertEquals(saveBooking1, result);
+        Assertions.assertEquals(baseBooking1, result);
     }
 
     @Test

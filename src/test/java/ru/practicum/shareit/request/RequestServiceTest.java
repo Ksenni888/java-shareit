@@ -84,12 +84,12 @@ class RequestServiceTest {
     public void addRequestTest() {
         User user = new User();
         ItemRequestDto itemRequestDto = new ItemRequestDto();
-        ItemRequest saveItemRequest = new ItemRequest();
+        ItemRequest baseItemRequest = new ItemRequest();
         ItemRequest itemRequest = new ItemRequest();
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        Mockito.when(itemRequestMapper.toRequest(itemRequestDto, user)).thenReturn(saveItemRequest);
-        Mockito.when(itemRequestRepository.save(saveItemRequest)).thenReturn(itemRequest);
+        Mockito.when(itemRequestMapper.toRequest(itemRequestDto, user)).thenReturn(baseItemRequest);
+        Mockito.when(itemRequestRepository.save(baseItemRequest)).thenReturn(itemRequest);
 
         ItemRequest result = itemRequestService.addRequest(1L, itemRequestDto);
 
@@ -106,14 +106,14 @@ class RequestServiceTest {
 
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
         Mockito.when(itemRequestRepository.findByUserId(1L)).thenReturn(List.of(itemRequest));
-        List<ItemRequest> saveItemRequests = List.of(itemRequest);
+        List<ItemRequest> baseItemRequests = List.of(itemRequest);
 
         Mockito.when(itemRepository.findByRequestId(1L)).thenReturn(List.of(item));
         List<Item> items = List.of(item);
 
         Mockito.when(itemRequestMapper.toDtoRequest(itemRequest, items)).thenReturn(itemRequestDto, itemRequestDto1);
 
-        List<ItemRequestDto> itemRequestFinal = saveItemRequests.stream().map(x -> itemRequestDto)
+        List<ItemRequestDto> itemRequestFinal = baseItemRequests.stream().map(x -> itemRequestDto)
                 .sorted(Comparator.comparing((ItemRequestDto::getCreated)))
                 .collect(Collectors.toList());
 

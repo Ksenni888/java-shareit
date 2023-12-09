@@ -42,7 +42,7 @@ public class ItemIntegrationTest {
     public void getItemsByUserId() {
 
         User user = new User(0L, "userName", "user@user.ru");
-        User saveUser = userRepository.save(user);
+        User baseUser = userRepository.save(user);
 
         User user2 = User.builder()
                 .id(0L)
@@ -50,36 +50,36 @@ public class ItemIntegrationTest {
                 .email("nik7@mail.ru")
                 .build();
 
-        User saveUser2 = userRepository.save(user2);
+        User baseUser2 = userRepository.save(user2);
 
-        System.out.println("saveUser.getId()  " + saveUser.getId());
-        System.out.println("saveUser2.getId()  " + saveUser2.getId());
+        System.out.println("saveUser.getId()  " + baseUser.getId());
+        System.out.println("saveUser2.getId()  " + baseUser2.getId());
 
         Item item = Item.builder()
                 .id(0L)
                 .name("item")
                 .description("description item")
                 .available(true)
-                .owner(saveUser)
+                .owner(baseUser)
                 .request(null)
                 .build();
 
         Item item1 = itemRepository.save(item);
 
-        Booking saveBooking = new Booking();
-        saveBooking.setId(0L);
-        saveBooking.setStart(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
-        saveBooking.setEnd(LocalDateTime.of(2023, Month.APRIL, 10, 12, 30));
-        saveBooking.setBooker(saveUser2);
-        saveBooking.setItem(item1);
-        saveBooking.setStatus(BookingStatus.APPROVED);
-        bookingRepository.save(saveBooking);
+        Booking baseBooking = new Booking();
+        baseBooking.setId(0L);
+        baseBooking.setStart(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
+        baseBooking.setEnd(LocalDateTime.of(2023, Month.APRIL, 10, 12, 30));
+        baseBooking.setBooker(baseUser2);
+        baseBooking.setItem(item1);
+        baseBooking.setStatus(BookingStatus.APPROVED);
+        bookingRepository.save(baseBooking);
 
         Booking lastBooking = new Booking();
         lastBooking.setId(0L);
         lastBooking.setStart(LocalDateTime.of(2024, Month.MARCH, 8, 12, 30));
         lastBooking.setEnd(LocalDateTime.of(2024, Month.MARCH, 10, 12, 30));
-        lastBooking.setBooker(saveUser2);
+        lastBooking.setBooker(baseUser2);
         lastBooking.setItem(item1);
         lastBooking.setStatus(BookingStatus.WAITING);
         bookingRepository.save(lastBooking);
@@ -88,14 +88,14 @@ public class ItemIntegrationTest {
         comments.setText("srzgezb");
         comments.setCreated(LocalDateTime.of(2023, Month.APRIL, 11, 12, 30));
         comments.setItem(item1);
-        comments.setAuthor(saveUser2);
+        comments.setAuthor(baseUser2);
         commentRepository.save(comments);
 
-        List<ItemDtoForOwners> allItems = itemRepository.findByOwnerId(saveUser.getId()).stream()
-                .map(x -> itemService.findById(x.getId(), saveUser.getId()))
+        List<ItemDtoForOwners> allItems = itemRepository.findByOwnerId(baseUser.getId()).stream()
+                .map(x -> itemService.findById(x.getId(), baseUser.getId()))
                 .collect(Collectors.toList());
 
-        List<ItemDtoForOwners> result = itemService.getItemsByUserId(saveUser.getId());
+        List<ItemDtoForOwners> result = itemService.getItemsByUserId(baseUser.getId());
 
         Assertions.assertEquals(allItems.get(0).getId(), result.get(0).getId());
         Assertions.assertEquals(allItems.get(0).getName(), result.get(0).getName());
