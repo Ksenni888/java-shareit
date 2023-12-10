@@ -216,17 +216,17 @@ public class BookingServiceTest {
         User user = new User(1L, "userName", "email@mail.ru");
         Item item = new Item(1L, "itemName", "itemDescription", true, user, null);
         Booking bookingCURRENT = new Booking(1L, LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(2), item, user, BookingStatus.APPROVED);
-        Booking bookingPAST = new Booking(2L, LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1), item, user, BookingStatus.APPROVED);
-        Booking bookingFUTURE = new Booking(3L, LocalDateTime.now().plusDays(2), LocalDateTime.now().plusDays(4), item, user, BookingStatus.APPROVED);
-        Booking bookingWAITING = new Booking(4L, LocalDateTime.now().plusDays(2), LocalDateTime.now().plusDays(4), item, user, BookingStatus.WAITING);
-        Booking bookingREJECTED = new Booking(5L, LocalDateTime.now().plusDays(2), LocalDateTime.now().plusDays(4), item, user, BookingStatus.REJECTED);
+        Booking bookingPAST = new Booking(2L, LocalDateTime.now().minusDays(7), LocalDateTime.now().minusDays(4), item, user, BookingStatus.APPROVED);
+        Booking bookingFUTURE = new Booking(3L, LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(5), item, user, BookingStatus.APPROVED);
+        Booking bookingWAITING = new Booking(4L, LocalDateTime.now().minusHours(2), LocalDateTime.now().plusDays(4), item, user, BookingStatus.WAITING); //current
+        Booking bookingREJECTED = new Booking(5L, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1), item, user, BookingStatus.REJECTED); //past
         List<Booking> allBooking = List.of(bookingCURRENT, bookingFUTURE, bookingREJECTED, bookingPAST, bookingWAITING);
 
         List<Booking> resultCURRENT = bookingService.checkState(allBooking, "CURRENT");
-        Assertions.assertEquals(resultCURRENT.get(0).getId(), bookingCURRENT.getId());
+        Assertions.assertEquals(resultCURRENT.size(), 2);
 
         List<Booking> resultPAST = bookingService.checkState(allBooking, "PAST");
-        Assertions.assertEquals(resultPAST.get(0).getId(), bookingPAST.getId());
+        Assertions.assertEquals(resultPAST.size(), 2);
 
         List<Booking> resultFUTURE = bookingService.checkState(allBooking, "FUTURE");
         Assertions.assertEquals(resultFUTURE.get(0).getId(), bookingFUTURE.getId());
