@@ -34,6 +34,11 @@ public class UserServiceTests {
     @Mock
     private UserMapper userMapper;
 
+    public UserDto inputUserDto = UserDto.builder()
+            .id(0L)
+            .name("Николай")
+            .email("nik@mail.ru")
+            .build();
     public User inputUser = User.builder()
             .id(0L)
             .name("Николай")
@@ -151,5 +156,14 @@ public class UserServiceTests {
                 ObjectNotFoundException.class,
                 () -> userService.checkUserExists(inputUserAfter.getId()));
         assertNotNull(exception.getMessage());
+    }
+
+    @Test
+    public void userMapperToUserTest() {
+        UserMapper userMapper1 = new UserMapper();
+        User result = userMapper1.toUser(inputUserDto);
+        Assertions.assertEquals(result.getId(), inputUser.getId());
+        Assertions.assertEquals(result.getName(), inputUser.getName());
+        Assertions.assertEquals(result.getEmail(), inputUser.getEmail());
     }
 }

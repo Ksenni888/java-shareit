@@ -111,7 +111,7 @@ public class BookingControllerTest {
 
     @Test
     public void getBookingsByStatusTest() throws Exception {
-        Mockito.when(bookingService.getBookingsByStatus( booking.getBooker().getId(),"FUTURE",
+        Mockito.when(bookingService.getBookingsByStatus(booking.getBooker().getId(), "FUTURE",
                 PageRequest.of(0, 10, Sort.by("start").descending()))).thenReturn(List.of(booking));
 
         mockMvc.perform(get("/bookings")
@@ -128,26 +128,26 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.[0]start[1]").value(4));
     }
 
-@Test
-public void getUserBookings() throws Exception {
-    Mockito.when(bookingService.getUserBookings( booking.getBooker().getId(),"FUTURE",
-            PageRequest.of(0, 10, Sort.by("start").descending()))).thenReturn(List.of(booking));
-    LocalDateTime start = LocalDateTime.of(2024, Month.APRIL, 8, 12, 30);
-    LocalDateTime end = LocalDateTime.of(2024, Month.APRIL, 12, 12, 30);
-    String addBooking1 = createBookingDtoJson(2L, start, end, BookingStatus.APPROVED);
+    @Test
+    public void getUserBookings() throws Exception {
+        Mockito.when(bookingService.getUserBookings(booking.getBooker().getId(), "FUTURE",
+        PageRequest.of(0, 10, Sort.by("start").descending()))).thenReturn(List.of(booking));
+        LocalDateTime start = LocalDateTime.of(2024, Month.APRIL, 8, 12, 30);
+        LocalDateTime end = LocalDateTime.of(2024, Month.APRIL, 12, 12, 30);
+        String addBooking1 = createBookingDtoJson(2L, start, end, BookingStatus.APPROVED);
 
-    mockMvc.perform(get("/bookings/owner")
-                    .header("X-Sharer-User-Id", user.getId())
-                    .param("state", "FUTURE")
-                    .content(List.of(addBooking1).toString())
-                    .contentType(MediaType.APPLICATION_JSON))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.size()").value(1))
-            .andExpect(jsonPath("$.[0]id").value(1L))
-            .andExpect(jsonPath("$.[0]start[1]").value(4));
+        mockMvc.perform(get("/bookings/owner")
+                        .header("X-Sharer-User-Id", user.getId())
+                        .param("state", "FUTURE")
+                        .content(List.of(addBooking1).toString())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$.[0]id").value(1L))
+                .andExpect(jsonPath("$.[0]start[1]").value(4));
 
-}
+    }
 
     public static String createBookingDtoJson(long id, LocalDateTime start, LocalDateTime end, BookingStatus status) {
         return "{\n" +

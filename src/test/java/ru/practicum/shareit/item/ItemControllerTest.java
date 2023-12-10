@@ -57,11 +57,9 @@ public class ItemControllerTest {
     }
 
     private User user = new User(1, "userName", "email");
-    private String itemName = "Дрель";
-    private String itemDescription = "Простая дрель";
     private boolean available = true;
-    private ItemDto itemDto = new ItemDto(1, itemName, itemDescription, available, 0);
-    private Item item = new Item(1, itemName, itemDescription, true, user, null);
+    private ItemDto itemDto = new ItemDto(1, "itemName", "itemDescription", true, 0);
+    private Item item = new Item(1, "itemName", "itemDescription", true, user, null);
     private Item itemUpd = new Item(1, "itemName2", "itemDescription2", true, user, null);
     private ItemDto itemUpdDto = new ItemDto(1, "itemName2", "itemDescription2", true, 0);
     private LocalDateTime start = LocalDateTime.of(2024, Month.APRIL, 8, 12, 30);
@@ -79,7 +77,7 @@ public class ItemControllerTest {
     @Test
     public void create() throws Exception {
 
-        String addItem = createItemDtoJson(itemName, itemDescription, available);
+        String addItem = createItemDtoJson("itemName", "itemDescription", available);
         when(itemService.create(anyLong(), any())).thenReturn(itemDto);
         mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", item.getOwner().getId())
@@ -88,8 +86,8 @@ public class ItemControllerTest {
 
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(itemName))
-                .andExpect(jsonPath("$.description").value(itemDescription))
+                .andExpect(jsonPath("$.name").value("itemName"))
+                .andExpect(jsonPath("$.description").value("itemDescription"))
                 .andExpect(jsonPath("$.available").value(available))
                 .andExpect(jsonPath("$.requestId").value(0));
     }
@@ -157,13 +155,29 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$[0].nextBooking.id").value(2L));
     }
 
-    public static String createItemDtoForOwnersJson(String name, String description, boolean available) {
-        return "{\n" +
-                "    \"name\": \"" + name + "\",\n" +
-                "    \"description\": \"" + description + "\",\n" +
-                "    \"available\": " + available + "\n" +
-                "}";
+    @Test
+    public void findItems() throws Exception {
+        String text = "itemName";
+        List<Item> items = List.of(item);
+        Mockito.when(itemService.findItems(text)).thenReturn(items);
+        Mockito.when(itemMapper.toItemDto(any())).thenReturn(itemDto);
+
+        String allItemDto = createItemDtoJson("itemName", "itemDescription", true);
+
+        mockMvc.perform(get("/items/search")
+                        .header("X-Sharer-User-Id", user.getId())
+                        .param("text", "itemName")
+                        .content(List.of(allItemDto).toString())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+
+                .andExpect(jsonPath("$[0].name").value("itemName"))
+                .andExpect(jsonPath("$[0].description").value("itemDescription"))
+                .andExpect(jsonPath("$[0].available").value(true));
     }
+
+
 
     public static String createItemForOunersJson(String name, String description, BookingDto2 lastBooking, BookingDto2 nextBooking, boolean available) {
         return "{\n" +

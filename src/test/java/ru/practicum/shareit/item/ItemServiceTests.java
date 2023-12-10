@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -51,13 +52,36 @@ public class ItemServiceTests {
     @InjectMocks
     private ItemServiceImpl itemService;
 
-    @Test
-    public void createTest() {
-        User user = User.builder()
+    User user = User.builder()
             .id(1L)
             .name("Николай")
             .email("nik@mail.ru")
             .build();
+
+    Item item = Item.builder()
+            .id(1L)
+            .name("item")
+            .description("description item")
+            .available(true)
+            .owner(user)
+            .request(null)
+            .build();
+
+    ItemDto itemDtoMapper = ItemDto.builder()
+            .id(1L)
+            .name("item")
+            .description("description item")
+            .available(true)
+            .requestId(0)
+            .build();
+
+    @Test
+    public void createTest() {
+//        User user = User.builder()
+//            .id(1L)
+//            .name("Николай")
+//            .email("nik@mail.ru")
+//            .build();
 
         User user2 = User.builder()
                 .id(2L)
@@ -113,20 +137,20 @@ public class ItemServiceTests {
 
     @Test
     public void updateTest() {
-        User user = User.builder()
-           .id(1L)
-            .name("Николай")
-           .email("nik@mail.ru")
-            .build();
+//        User user = User.builder()
+//           .id(1L)
+//            .name("Николай")
+//           .email("nik@mail.ru")
+//            .build();
 
-        Item item = Item.builder()
-            .id(1L)
-            .name("item")
-            .description("description item")
-            .available(true)
-            .owner(user)
-            .request(null)
-            .build();
+//        Item item = Item.builder()
+//            .id(1L)
+//            .name("item")
+//            .description("description item")
+//            .available(true)
+//            .owner(user)
+//            .request(null)
+//            .build();
 
         Item item1 = Item.builder()
                 .id(1L)
@@ -157,20 +181,20 @@ public class ItemServiceTests {
 
         List<CommentDto> commentsDto = new ArrayList<>();
 
-        User user = User.builder()
-            .id(1L)
-            .name("Николай")
-            .email("nik@mail.ru")
-            .build();
+//        User user = User.builder()
+//            .id(1L)
+//            .name("Николай")
+//            .email("nik@mail.ru")
+//            .build();
 
-        Item item = Item.builder()
-            .id(1L)
-            .name("item")
-            .description("description item")
-            .available(true)
-            .owner(user)
-            .request(null)
-            .build();
+//        Item item = Item.builder()
+//            .id(1L)
+//            .name("item")
+//            .description("description item")
+//            .available(true)
+//            .owner(user)
+//            .request(null)
+//            .build();
 
         ItemDtoForOwners itemDtoForOwners = ItemDtoForOwners.builder()
                 .id(1L)
@@ -195,21 +219,22 @@ public class ItemServiceTests {
     public void getItemsByUserIdTest() {
         when(userRepository.existsById(1L)).thenReturn(true);
         when(itemRepository.existsById(1L)).thenReturn(true);
+//
+//    User user = User.builder()
+//            .id(1L)
+//            .name("Николай")
+//            .email("nik@mail.ru")
+//            .build();
 
-    User user = User.builder()
-            .id(1L)
-            .name("Николай")
-            .email("nik@mail.ru")
-            .build();
+//    Item item = Item.builder()
+//            .id(1L)
+//            .name("item")
+//            .description("description item")
+//            .available(true)
+//            .owner(user)
+//            .request(null)
+//            .build();
 
-    Item item = Item.builder()
-            .id(1L)
-            .name("item")
-            .description("description item")
-            .available(true)
-            .owner(user)
-            .request(null)
-            .build();
         List<Item> items = List.of(item);
         Mockito.when(itemRepository.findByOwnerId(1L)).thenReturn(items);
         List<ItemDtoForOwners> outputItems = items.stream()
@@ -222,20 +247,20 @@ public class ItemServiceTests {
 
     @Test
     public void findItemsTest() {
-        User user = User.builder()
-                .id(1L)
-                .name("Николай")
-                .email("nik@mail.ru")
-                .build();
+//        User user = User.builder()
+//                .id(1L)
+//                .name("Николай")
+//                .email("nik@mail.ru")
+//                .build();
 
-        Item item = Item.builder()
-                .id(1L)
-                .name("item")
-                .description("description item")
-                .available(true)
-                .owner(user)
-                .request(null)
-                .build();
+//        Item item = Item.builder()
+//                .id(1L)
+//                .name("item")
+//                .description("description item")
+//                .available(true)
+//                .owner(user)
+//                .request(null)
+//                .build();
         String text = "tekst";
         List<Item> items = List.of(item);
         Mockito.when(itemRepository.search(text)).thenReturn(items);
@@ -247,11 +272,11 @@ public class ItemServiceTests {
     @Test
     public void addCommentTest() {
 
-        User user = User.builder()
-                .id(1L)
-                .name("Николай")
-                .email("nik@mail.ru")
-                .build();
+//        User user = User.builder()
+//                .id(1L)
+//                .name("Николай")
+//                .email("nik@mail.ru")
+//                .build();
 
         User user2 = User.builder()
                 .id(2L)
@@ -259,14 +284,14 @@ public class ItemServiceTests {
                 .email("nik1@mail.ru")
                 .build();
 
-        Item item = Item.builder()
-                .id(1L)
-                .name("item")
-                .description("description item")
-                .available(true)
-                .owner(user)
-                .request(null)
-                .build();
+//        Item item = Item.builder()
+//                .id(1L)
+//                .name("item")
+//                .description("description item")
+//                .available(true)
+//                .owner(user)
+//                .request(null)
+//                .build();
 
         Booking booking = Booking.builder()
                 .id(1L)
@@ -301,5 +326,27 @@ public class ItemServiceTests {
 
         Comments result = itemService.addComment(2L, 1L, commentDto);
         Assertions.assertEquals(result, comments1);
+    }
+
+    @Test
+    public void itemMapperToItemDtoTest() {
+       ItemMapper itemMapper1 = new ItemMapper();
+        ItemDto result = itemMapper1.toItemDto(item);
+        Assertions.assertEquals(result.getId(), itemDtoMapper.getId());
+        Assertions.assertEquals(result.getName(), itemDtoMapper.getName());
+        Assertions.assertEquals(result.getDescription(), itemDtoMapper.getDescription());
+        Assertions.assertEquals(result.getAvailable(), itemDtoMapper.getAvailable());
+        Assertions.assertEquals(result.getRequestId(), itemDtoMapper.getRequestId());
+    }
+
+    @Test
+    public void toItem() {
+        ItemMapper itemMapper2 = new ItemMapper();
+        Item result = itemMapper2.toItem(itemDtoMapper,user,null);
+        Assertions.assertEquals(result.getId(), item.getId());
+        Assertions.assertEquals(result.getName(), item.getName());
+        Assertions.assertEquals(result.getDescription(), item.getDescription());
+        Assertions.assertEquals(result.getAvailable(), item.getAvailable());
+        Assertions.assertEquals(result.getRequest(), item.getRequest());
     }
 }
