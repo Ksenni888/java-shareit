@@ -74,6 +74,8 @@ public class ItemServiceTests {
             .requestId(0)
             .build();
 
+    ItemMapper itemMapper1 = new ItemMapper();
+
     @Test
     public void createTest() {
         User user2 = User.builder()
@@ -257,13 +259,37 @@ public class ItemServiceTests {
     }
 
     @Test
-    public void toItem() {
-        ItemMapper itemMapper2 = new ItemMapper();
-        Item result = itemMapper2.toItem(itemDtoMapper, user, null);
+    public void toItemTest() {
+        ItemMapper itemMapper1 = new ItemMapper();
+        Item result = itemMapper1.toItem(itemDtoMapper, user, null);
         Assertions.assertEquals(result.getId(), item.getId());
         Assertions.assertEquals(result.getName(), item.getName());
         Assertions.assertEquals(result.getDescription(), item.getDescription());
         Assertions.assertEquals(result.getAvailable(), item.getAvailable());
         Assertions.assertEquals(result.getRequest(), item.getRequest());
+    }
+
+    @Test
+    public void toCommentDtoTest() {
+        ItemMapper itemMapper1 = new ItemMapper();
+        Comments comments = new Comments(1L, "comment1", item, user,  LocalDateTime.now().minusDays(1));
+        CommentDto result = itemMapper1.toCommentDto(comments);
+        Assertions.assertEquals(result.getId(), comments.getId());
+        Assertions.assertEquals(result.getAuthor(),comments.getAuthor().getId());
+        Assertions.assertEquals(result.getAuthorName(), comments.getAuthor().getName());
+        Assertions.assertEquals(result.getText(), comments.getText());
+        Assertions.assertEquals(result.getCreated(), comments.getCreated());
+    }
+
+    @Test
+    public void toCommentTest() {
+        ItemMapper itemMapper1 = new ItemMapper();
+        CommentDto inputCommentDto = new CommentDto(1L, "comment1", 1L, "name", LocalDateTime.now());
+        Comments result = itemMapper1.toComment(inputCommentDto, user, item);
+        Assertions.assertEquals(result.getId(), inputCommentDto.getId());
+        Assertions.assertEquals(result.getText(), inputCommentDto.getText());
+        Assertions.assertEquals(result.getItem(), item);
+        Assertions.assertEquals(result.getAuthor().getId(),inputCommentDto.getAuthor());
+        Assertions.assertEquals(result.getCreated().getDayOfMonth(), LocalDateTime.now().getDayOfMonth());
     }
 }

@@ -124,7 +124,6 @@ class RequestServiceTest {
 
     @Test
     public void getAllRequestsTest() {
-        ItemRequest itemRequest = new ItemRequest();
         List<ItemRequest> allItemRequest = new ArrayList<>();
         Page<ItemRequest> allPage = new PageImpl<>(allItemRequest);
 
@@ -139,5 +138,19 @@ class RequestServiceTest {
 
         List<ItemRequestDto> result = itemRequestService.getAllRequests(1L, PageRequest.of(0, 1, Sort.by("created").descending()));
         Assertions.assertEquals(outputItemRequestDto, result);
+    }
+
+    @Test
+    public void toDtoRequest() {
+        ItemRequestMapper itemRequestMapper1 = new ItemRequestMapper();
+        User user = new User(1L, "name", "mail@mail.com");
+        ItemRequest itemRequest = new ItemRequest(1L, "desc", user, LocalDateTime.of(2022, Month.APRIL, 8, 12, 30));
+        Item item = new Item(1L, "itemName", "itemDescription", true, user, itemRequest);
+        List<Item> items = List.of(item);
+        ItemRequestDto result = itemRequestMapper1.toDtoRequest(itemRequest, items);
+        Assertions.assertEquals(result.getId(), 1L);
+        Assertions.assertEquals(result.getCreated().getDayOfMonth(), 8);
+        Assertions.assertEquals(result.getDescription(), "desc");
+        Assertions.assertEquals(result.getItems().get(0).getName(), "itemName");
     }
 }
