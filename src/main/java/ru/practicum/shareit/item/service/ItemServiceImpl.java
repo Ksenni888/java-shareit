@@ -49,25 +49,15 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidException("id must be 0");
         }
 
-        if (userId == 0) {
-            log.warn("This user is not exist");
-            throw new ObjectNotFoundException("This user is not exist");
-        }
-
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("This user not found");
         }
 
         User user = userRepository.findById(userId).orElseThrow();
-        ItemRequest itemRequest;
 
-        if (itemDto.getRequestId() != 0) {
-            itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow();
-        } else {
-            itemRequest = null;
-        }
-
-        Item item = itemMapper.toItem(itemDto, user, itemRequest);
+        Item item = itemMapper.toItem(itemDto, user, null);
+        itemRequestRepository.findById(itemDto.getRequestId())
+                .ifPresent(item::setRequest);
 
         return itemMapper.toItemDto(itemRepository.save(item));
     }

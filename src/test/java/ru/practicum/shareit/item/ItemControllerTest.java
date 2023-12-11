@@ -13,15 +13,21 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.booking.dto.BookingDto2;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoForOwners;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.CommentRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -45,7 +51,15 @@ public class ItemControllerTest {
     @Mock
     private ItemServiceImpl itemService;
     @Mock
+    private BookingRepository bookingRepository;
+    @Mock
     private ItemMapper itemMapper;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private ItemRepository itemRepository;
+    @Mock
+    private CommentRepository commentRepository;
     @InjectMocks
     private ItemController itemController;
 
@@ -66,13 +80,14 @@ public class ItemControllerTest {
     private LocalDateTime end = LocalDateTime.of(2024, Month.APRIL, 12, 12, 30);
     private LocalDateTime start1 = LocalDateTime.of(2023, Month.APRIL, 8, 12, 30);
     private LocalDateTime end1 = LocalDateTime.of(2023, Month.APRIL, 12, 12, 30);
-    CommentDto commentDto = new CommentDto();
+    CommentDto commentDto = new CommentDto(0L, "text", user.getId(), user.getName(), LocalDateTime.of(2023, 12, 10, 11, 30));
     List<CommentDto> comments = List.of(commentDto);
     ItemRequest request = new ItemRequest(1L, "description", user, start);
     BookingDto2 lastBooking = new BookingDto2(1L, start1, end1, user.getId());
     BookingDto2 nextBooking = new BookingDto2(2L, start, end, user.getId());
     ItemDtoForOwners itemDtoForOwners = new ItemDtoForOwners(1L, "name", "description",
             true, request.getId(), lastBooking, nextBooking, comments);
+    Booking booking = new Booking(1L, start, end, item, user, BookingStatus.APPROVED);
 
     @Test
     public void create() throws Exception {
@@ -176,8 +191,6 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$[0].description").value("itemDescription"))
                 .andExpect(jsonPath("$[0].available").value(true));
     }
-
-
 
     public static String createItemForOunersJson(String name, String description, BookingDto2 lastBooking, BookingDto2 nextBooking, boolean available) {
         return "{\n" +

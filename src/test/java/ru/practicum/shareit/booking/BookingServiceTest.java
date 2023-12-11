@@ -122,7 +122,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void createBookingNotFoundItemTest() {
+    public void createBookingNotExistItemTest() {
         Mockito.when(userRepository.existsById(user.getId())).thenReturn(true);
         Mockito.when(itemRepository.existsById(item.getId())).thenReturn(false);
 
@@ -166,6 +166,15 @@ public class BookingServiceTest {
         Booking result = bookingService.checkRequest(1L, 1L, approved);
 
         Assertions.assertEquals(saveBooking, result);
+    }
+
+    @Test
+    public void checkRequestApprovedIsBlankTest() {
+        String approved = "";
+        ValidException exception = Assertions.assertThrows(
+                ValidException.class,
+                () -> bookingService.checkRequest(user.getId(), booking.getId(), approved));
+        Assertions.assertEquals("approved must be true/false", exception.getMessage());
     }
 
     @Test

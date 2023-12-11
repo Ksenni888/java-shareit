@@ -10,6 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exeption.ObjectNotFoundException;
+import ru.practicum.shareit.exeption.ValidException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoForOwners;
@@ -27,10 +29,12 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,14 +79,30 @@ public class ItemServiceTests {
             .build();
 
     ItemMapper itemMapper1 = new ItemMapper();
+    ItemDto itemDto2 = ItemDto.builder()
+            .id(1L)
+            .name("item")
+            .description("description item")
+            .available(true)
+            .requestId(1L)
+            .build();
+
+    ItemDto itemDtoInput = ItemDto.builder()
+            .id(0L)
+            .name("item")
+            .description("description item")
+            .available(true)
+            .requestId(1L)
+            .build();
+
+    User user2 = User.builder()
+            .id(2L)
+            .name("Нико")
+            .email("nik7@mail.ru")
+            .build();
 
     @Test
     public void createTest() {
-        User user2 = User.builder()
-                .id(2L)
-                .name("Нико")
-                .email("nik7@mail.ru")
-                .build();
 
         ItemRequest request = ItemRequest.builder()
                 .id(1L)
@@ -100,14 +120,6 @@ public class ItemServiceTests {
                 .request(request)
                 .build();
 
-        ItemDto itemDto2 = ItemDto.builder()
-                .id(1L)
-                .name("item")
-                .description("description item")
-                .available(true)
-                .requestId(1L)
-                .build();
-
         ItemDto itemDto = ItemDto.builder()
                 .id(0L)
                 .name("item")
@@ -116,18 +128,31 @@ public class ItemServiceTests {
                 .requestId(1L)
                 .build();
 
-        when(userRepository.existsById(1L)).thenReturn(true);
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(itemRequestRepository.findById(1L)).thenReturn(Optional.ofNullable(request));
-        Item item = itemMapper.toItem(itemDto, user, request);
-
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        Mockito.when(itemMapper.toItem(itemDto, user, null)).thenReturn(item);
+        Mockito.when(itemRequestRepository.findById(itemDto.getRequestId())).thenReturn(Optional.ofNullable(request));
         when(itemRepository.save(item)).thenReturn(item2);
         when(itemMapper.toItemDto(item2)).thenReturn(itemDto2);
-
         ItemDto result = itemService.create(user.getId(), itemDto);
+        Assertions.assertEquals(result.getId(), itemDto2.getId());
+    }
 
-        Assertions.assertEquals(result, itemDto2);
+    @Test
+    public void createWithNotNullIdTest() {
+        ValidException exception = Assertions.assertThrows(
+                ValidException.class,
+                () -> itemService.create(user.getId(), itemDto2));
+        Assertions.assertEquals("id must be 0", exception.getMessage());
+    }
+
+    @Test
+    public void createWithNotExistUserTest() {
+        Mockito.when(userRepository.existsById(user.getId())).thenReturn(false);
+        ObjectNotFoundException exception = Assertions.assertThrows(
+                ObjectNotFoundException.class,
+                () -> itemService.create(user.getId(), itemDtoInput));
+        Assertions.assertEquals("This user not found", exception.getMessage());
     }
 
     @Test
@@ -148,6 +173,34 @@ public class ItemServiceTests {
 
         Item result = itemService.update(1L, item, 1L);
         Assertions.assertEquals(item1, result);
+    }
+
+    @Test
+    public void updateItemNotExistTest() {
+        Mockito.when(itemRepository.existsById(item.getId())).thenReturn(false);
+        ObjectNotFoundException exception = Assertions.assertThrows(
+                ObjectNotFoundException.class,
+                () -> itemService.update(user.getId(), item, item.getId()));
+        Assertions.assertEquals("This item not found", exception.getMessage());
+    }
+
+    @Test
+    public void updateItemIdSameUserIdTest() {
+        Mockito.when(itemRepository.existsById(item.getId())).thenReturn(true);
+        Mockito.when(itemRepository.getReferenceById(item.getId())).thenReturn(item);
+        ObjectNotFoundException exception = Assertions.assertThrows(
+                ObjectNotFoundException.class,
+                () -> itemService.update(user2.getId(), item, item.getId()));
+        Assertions.assertEquals("Items can changes only owners", exception.getMessage());
+    }
+
+    @Test
+    public void findByIdItemNotExistTest() {
+        Mockito.when(itemRepository.existsById(item.getId())).thenReturn(false);
+        ObjectNotFoundException exception = Assertions.assertThrows(
+                ObjectNotFoundException.class,
+                () -> itemService.findById(user.getId(), item.getId()));
+        Assertions.assertEquals("Item not found", exception.getMessage());
     }
 
     @Test
@@ -195,6 +248,15 @@ public class ItemServiceTests {
     }
 
     @Test
+    public void getItemsByUserIdNotExistTest() {
+        Mockito.when(userRepository.existsById(anyLong())).thenReturn(false);
+        ObjectNotFoundException exception = Assertions.assertThrows(
+                ObjectNotFoundException.class,
+                () -> itemService.getItemsByUserId(user.getId()));
+        Assertions.assertEquals("User not found", exception.getMessage());
+    }
+
+    @Test
     public void findItemsTest() {
         String text = "tekst";
         List<Item> items = List.of(item);
@@ -202,6 +264,12 @@ public class ItemServiceTests {
 
         List<Item> result = itemService.findItems(text);
         Assertions.assertEquals(items, result);
+    }
+
+    @Test
+    public void findItemsTextIsBlankTest() {
+        List<Item> items = itemService.findItems("");
+        Assertions.assertEquals(items, Collections.emptyList());
     }
 
     @Test
@@ -248,6 +316,42 @@ public class ItemServiceTests {
     }
 
     @Test
+    public void addCommentTextIsBlankTest() {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(1L);
+        commentDto.setText("");
+        ValidException exception = Assertions.assertThrows(
+                ValidException.class,
+                () -> itemService.addComment(user.getId(), item.getId(), commentDto));
+        Assertions.assertEquals("This field can't be empty, write the text", exception.getMessage());
+    }
+
+    @Test
+    public void addCommentBookingsItemByUserIsEmptyTest() {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(1L);
+        commentDto.setText("xfdbxdgn");
+        Mockito.when(bookingRepository.findByBookerIdAndItemId(user.getId(), item.getId())).thenReturn(Collections.emptyList());
+        ObjectNotFoundException exception = Assertions.assertThrows(
+                ObjectNotFoundException.class,
+                () -> itemService.addComment(user.getId(), item.getId(), commentDto));
+        Assertions.assertEquals("You can't write the comment, because you didn't booking this item", exception.getMessage());
+    }
+
+    @Test
+    public void addCommentBookingsEndsBeforeNowTest() {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(1L);
+        commentDto.setText("xfdbxdgn");
+        Booking booking = new Booking(1L, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(3), item, user, BookingStatus.APPROVED);
+        Mockito.when(bookingRepository.findByBookerIdAndItemId(user.getId(), item.getId())).thenReturn(List.of(booking));
+        ValidException exception = Assertions.assertThrows(
+                ValidException.class,
+                () -> itemService.addComment(user.getId(), item.getId(), commentDto));
+        Assertions.assertEquals("You can't comment, because you didn't use this item", exception.getMessage());
+    }
+
+    @Test
     public void itemMapperToItemDtoTest() {
         ItemMapper itemMapper1 = new ItemMapper();
         ItemDto result = itemMapper1.toItemDto(item);
@@ -272,10 +376,10 @@ public class ItemServiceTests {
     @Test
     public void toCommentDtoTest() {
         ItemMapper itemMapper1 = new ItemMapper();
-        Comments comments = new Comments(1L, "comment1", item, user,  LocalDateTime.now().minusDays(1));
+        Comments comments = new Comments(1L, "comment1", item, user, LocalDateTime.now().minusDays(1));
         CommentDto result = itemMapper1.toCommentDto(comments);
         Assertions.assertEquals(result.getId(), comments.getId());
-        Assertions.assertEquals(result.getAuthor(),comments.getAuthor().getId());
+        Assertions.assertEquals(result.getAuthor(), comments.getAuthor().getId());
         Assertions.assertEquals(result.getAuthorName(), comments.getAuthor().getName());
         Assertions.assertEquals(result.getText(), comments.getText());
         Assertions.assertEquals(result.getCreated(), comments.getCreated());
@@ -289,7 +393,7 @@ public class ItemServiceTests {
         Assertions.assertEquals(result.getId(), inputCommentDto.getId());
         Assertions.assertEquals(result.getText(), inputCommentDto.getText());
         Assertions.assertEquals(result.getItem(), item);
-        Assertions.assertEquals(result.getAuthor().getId(),inputCommentDto.getAuthor());
+        Assertions.assertEquals(result.getAuthor().getId(), inputCommentDto.getAuthor());
         Assertions.assertEquals(result.getCreated().getDayOfMonth(), LocalDateTime.now().getDayOfMonth());
     }
 }

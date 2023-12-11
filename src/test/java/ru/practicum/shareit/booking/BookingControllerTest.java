@@ -131,7 +131,7 @@ public class BookingControllerTest {
     @Test
     public void getUserBookings() throws Exception {
         Mockito.when(bookingService.getUserBookings(booking.getBooker().getId(), "FUTURE",
-        PageRequest.of(0, 10, Sort.by("start").descending()))).thenReturn(List.of(booking));
+                PageRequest.of(0, 10, Sort.by("start").descending()))).thenReturn(List.of(booking));
         LocalDateTime start = LocalDateTime.of(2024, Month.APRIL, 8, 12, 30);
         LocalDateTime end = LocalDateTime.of(2024, Month.APRIL, 12, 12, 30);
         String addBooking1 = createBookingDtoJson(2L, start, end, BookingStatus.APPROVED);

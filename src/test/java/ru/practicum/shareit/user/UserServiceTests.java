@@ -90,7 +90,7 @@ public class UserServiceTests {
 
     @Test
     public void createUserWithIdTest() {
-       ValidException exception = Assertions.assertThrows(
+        ValidException exception = Assertions.assertThrows(
                 ValidException.class,
                 () -> userService.create(inputUserAfter));
         assertNotNull(exception.getMessage());

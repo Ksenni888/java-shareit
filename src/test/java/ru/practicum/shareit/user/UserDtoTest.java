@@ -10,25 +10,26 @@ import ru.practicum.shareit.user.dto.UserDto;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 @JsonTest
 public class UserDtoTest {
 
-        @Autowired
-        private JacksonTester<UserDto> jacksonTester;
+    @Autowired
+    private JacksonTester<UserDto> jacksonTester;
 
-        @Test
-        public void itemRequestDtoTest() throws IOException {
+    @Test
+    public void itemRequestDtoTest() throws IOException {
 
-            UserDto userDto1 = UserDto.builder()
-                    .id(2L)
-                    .name("name1")
-                    .email("email@mail.ru")
-                    .build();
+        UserDto userDto1 = UserDto.builder()
+                .id(2L)
+                .name("name1")
+                .email("email@mail.ru")
+                .build();
 
-            JsonContent<UserDto> content = jacksonTester.write(userDto1);
+        JsonContent<UserDto> content = jacksonTester.write(userDto1);
 
-            assertThat(content).hasJsonPath("$.id");
-            assertThat(content).hasJsonPath("$.name");
-            assertThat(content).hasJsonPath("$.email");
-        }
+        assertThat(content).hasJsonPath("$.id");
+        assertThat(content).hasJsonPath("$.name");
+        assertThat(content).hasJsonPath("$.email");
     }
+}

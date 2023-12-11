@@ -43,9 +43,7 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<ItemRequestDto> getRequest(@RequestHeader(USER_ID_HEADER) long userId,
-                                           @RequestParam(defaultValue = "0") @Min(0) Integer from,
-                                           @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+    public List<ItemRequestDto> getRequest(@RequestHeader(USER_ID_HEADER) long userId){
 
         return itemRequestService.getRequest(userId);
     }
