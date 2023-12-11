@@ -61,6 +61,7 @@ public class ItemServiceTests {
             .email("nik@mail.ru")
             .build();
 
+
     Item item = Item.builder()
             .id(1L)
             .name("item")
@@ -280,14 +281,13 @@ public class ItemServiceTests {
                 .email("nik1@mail.ru")
                 .build();
 
-        Booking booking = Booking.builder()
-                .id(1L)
-                .start(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30))
-                .end(LocalDateTime.of(2023, Month.APRIL, 10, 12, 30))
-                .item(item)
-                .booker(user2)
-                .status(BookingStatus.APPROVED)
-                .build();
+        Booking booking = new Booking();
+        booking.setId(1L);
+        booking.setStart(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
+        booking.setEnd(LocalDateTime.of(2023, Month.APRIL, 10, 12, 30));
+        booking.setItem(item);
+        booking.setBooker(user2);
+        booking.setStatus(BookingStatus.APPROVED);
 
         CommentDto commentDto = CommentDto.builder()
                 .text("comment1")

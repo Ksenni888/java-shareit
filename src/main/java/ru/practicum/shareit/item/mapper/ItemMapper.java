@@ -20,73 +20,74 @@ import java.util.List;
 public class ItemMapper {
 
     public ItemDto toItemDto(Item item) {
-
-        return ItemDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.getAvailable())
-                .requestId(item.getRequest() != null ? item.getRequest().getId() : 0)
-                .build();
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.getAvailable());
+        itemDto.setRequestId(item.getRequest() != null ? item.getRequest().getId() : 0);
+        return itemDto;
     }
 
     public Item toItem(ItemDto itemDto, User user, ItemRequest itemRequest) {
-        return Item.builder()
-                .id(itemDto.getId())
-                .name(itemDto.getName())
-                .description(itemDto.getDescription())
-                .available(itemDto.getAvailable())
-                .owner(user)
-                .request(itemRequest)
-                .build();
+        Item item = new Item();
+        item.setId(itemDto.getId());
+        item.setName(itemDto.getName());
+        item.setDescription(itemDto.getDescription());
+        item.setAvailable(itemDto.getAvailable());
+        item.setOwner(user);
+        item.setRequest(itemRequest);
+        return item;
+    }
+
+    public BookingDto2 createLastBooking(Booking lastBooking) {
+        BookingDto2 bookingDto2 = new BookingDto2();
+        bookingDto2.setId(lastBooking.getId());
+        bookingDto2.setStart(lastBooking.getStart());
+        bookingDto2.setEnd(lastBooking.getEnd());
+        bookingDto2.setBookerId(lastBooking.getBooker().getId());
+        return bookingDto2;
+    }
+
+    public BookingDto2 createNextBooking(Booking nextBooking) {
+        BookingDto2 bookingDto2 = new BookingDto2();
+        bookingDto2.setId(nextBooking.getId());
+        bookingDto2.setStart(nextBooking.getStart());
+        bookingDto2.setEnd(nextBooking.getEnd());
+        bookingDto2.setBookerId(nextBooking.getBooker().getId());
+        return bookingDto2;
     }
 
     public ItemDtoForOwners toItemDtoForOwners(Item item, long userId, Booking lastBooking, Booking nextBooking, List<CommentDto> comments) {
-
-        return ItemDtoForOwners.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.getAvailable())
-                .request(item.getRequest() != null ? item.getRequest().getId() : 0)
-                .lastBooking((lastBooking != null) && (item.getOwner().getId() == userId) ?
-                        BookingDto2.builder()
-                                .id(lastBooking.getId())
-                                .start(lastBooking.getStart())
-                                .end(lastBooking.getEnd())
-                                .bookerId(lastBooking.getBooker().getId())
-                                .build() : null
-                )
-
-                .nextBooking((nextBooking != null) && (item.getOwner().getId() == userId) ?
-                        BookingDto2.builder()
-                                .id(nextBooking.getId())
-                                .start(nextBooking.getStart())
-                                .end(nextBooking.getEnd())
-                                .bookerId(nextBooking.getBooker().getId())
-                                .build() : null
-                )
-                .comments(comments)
-                .build();
+        ItemDtoForOwners itemDtoForOwners = new ItemDtoForOwners();
+        itemDtoForOwners.setId(item.getId());
+        itemDtoForOwners.setName(item.getName());
+        itemDtoForOwners.setDescription(item.getDescription());
+        itemDtoForOwners.setAvailable(item.getAvailable());
+        itemDtoForOwners.setRequest(item.getRequest() != null ? item.getRequest().getId() : 0);
+        itemDtoForOwners.setLastBooking((lastBooking != null) && (item.getOwner().getId() == userId) ? createLastBooking(lastBooking) : null);
+        itemDtoForOwners.setNextBooking((nextBooking != null) && (item.getOwner().getId() == userId) ? createNextBooking(nextBooking) : null);
+        itemDtoForOwners.setComments(comments);
+        return itemDtoForOwners;
     }
 
     public CommentDto toCommentDto(Comments comments) {
-        return CommentDto.builder()
-                .id(comments.getId())
-                .author(comments.getAuthor().getId())
-                .authorName(comments.getAuthor().getName())
-                .text(comments.getText())
-                .created(comments.getCreated())
-                .build();
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(comments.getId());
+        commentDto.setAuthor(comments.getAuthor().getId());
+        commentDto.setAuthorName(comments.getAuthor().getName());
+        commentDto.setText(comments.getText());
+        commentDto.setCreated(comments.getCreated());
+        return commentDto;
     }
 
     public Comments toComment(CommentDto commentDto, User user, Item item) {
-        return Comments.builder()
-                .id(commentDto.getId())
-                .text(commentDto.getText())
-                .item(item)
-                .author(user)
-                .created(LocalDateTime.now())
-                .build();
+        Comments comments = new Comments();
+        comments.setId(commentDto.getId());
+        comments.setText(commentDto.getText());
+        comments.setItem(item);
+        comments.setAuthor(user);
+        comments.setCreated(LocalDateTime.now());
+        return comments;
     }
 }

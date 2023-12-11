@@ -31,13 +31,12 @@ public class BookingDtoTest {
         User user = new User(1L, "name", "mail@mail.ru");
         Item item = new Item();
         item.setId(1L);
-        BookingDto bookingDto = BookingDto.builder()
-                .id(1L)
-                .itemId(1L)
-                .start(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30))
-                .end(LocalDateTime.of(2023, Month.APRIL, 10, 12, 30))
-                .status(BookingStatus.APPROVED)
-                .build();
+        BookingDto bookingDto = new BookingDto();
+        bookingDto.setId(1L);
+        bookingDto.setItemId(1L);
+        bookingDto.setStart(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
+        bookingDto.setEnd(LocalDateTime.of(2023, Month.APRIL, 10, 12, 30));
+        bookingDto.setStatus(BookingStatus.APPROVED);
 
         Booking booking = bookingMapper.toBooking(bookingDto, user, item);
 

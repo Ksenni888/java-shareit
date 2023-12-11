@@ -107,13 +107,7 @@ public class ItemServiceImpl implements ItemService {
                 .min((Comparator.comparing(Booking::getStart))).orElse(null);
 
         List<CommentDto> comments = commentRepository.findByItemId(itemId).stream()
-                .map(x -> CommentDto.builder()
-                        .id(x.getId())
-                        .author(x.getAuthor().getId())
-                        .authorName(x.getAuthor().getName())
-                        .text(x.getText())
-                        .created(x.getCreated())
-                        .build())
+                .map(itemMapper::toCommentDto)
                 .collect(Collectors.toList());
 
         return itemMapper.toItemDtoForOwners(itemRepository.getReferenceById(itemId), userId, lastBooking, nextBooking, comments);
