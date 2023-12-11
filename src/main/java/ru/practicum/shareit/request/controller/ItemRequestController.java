@@ -43,7 +43,7 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<ItemRequestDto> getRequest(@RequestHeader(USER_ID_HEADER) long userId){
+    public List<ItemRequestDto> getRequest(@RequestHeader(USER_ID_HEADER) long userId) {
 
         return itemRequestService.getRequest(userId);
     }

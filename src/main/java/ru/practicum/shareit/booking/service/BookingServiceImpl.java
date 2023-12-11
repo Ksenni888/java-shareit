@@ -61,9 +61,9 @@ public class BookingServiceImpl implements BookingService {
         }
 
         Item baseItem = itemRepository.findById(baseItemId).orElseThrow();
-        if (itemRepository.findById(baseItemId).isEmpty()) {
-            throw new ObjectNotFoundException("Item not found");
-        }
+//        if (itemRepository.findById(baseItemId).isEmpty()) {
+//            throw new ObjectNotFoundException("Item not found");
+//        }
 
         if (!baseItem.getAvailable()) {
             throw new ValidException("Item is not available");
