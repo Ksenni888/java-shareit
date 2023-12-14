@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookingDto2 {
+public class DtoForNextLastBooking {
     private long id;
     private LocalDateTime start;
     private LocalDateTime end;

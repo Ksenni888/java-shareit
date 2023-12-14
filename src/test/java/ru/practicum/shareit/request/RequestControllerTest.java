@@ -26,6 +26,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -90,6 +91,9 @@ public class RequestControllerTest {
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$..created[2]").value(LocalDateTime.now().minusDays(1).getDayOfMonth()))
                 .andExpect(jsonPath("$.description").value("desc"));
+
+        Mockito.verify(itemRequestService, times(1)).addRequest(anyLong(), any());
+        Mockito.verifyNoMoreInteractions(itemRequestService);
     }
 
     @Test

@@ -24,24 +24,31 @@ public class BookingDtoTest {
     @Autowired
     private JacksonTester<Booking> jacksonTester;
 
-    @Test
-    public void toBookingTest() throws IOException {
-        BookingMapper bookingMapper = new BookingMapper();
+    private User user() {
+        User user = new User();
+        user.setId(1L);
+        user.setName("name");
+        user.setEmail("mail@mail.ru");
+        return user;
+    }
 
-        User user = new User(1L, "name", "mail@mail.ru");
-        Item item = new Item();
-        item.setId(1L);
+    private BookingDto bookingDto() {
         BookingDto bookingDto = new BookingDto();
         bookingDto.setId(1L);
         bookingDto.setItemId(1L);
         bookingDto.setStart(LocalDateTime.of(2023, Month.APRIL, 8, 12, 30));
         bookingDto.setEnd(LocalDateTime.of(2023, Month.APRIL, 10, 12, 30));
         bookingDto.setStatus(BookingStatus.APPROVED);
+        return bookingDto;
+    }
 
-        Booking booking = bookingMapper.toBooking(bookingDto, user, item);
-
+    @Test
+    public void toBookingTest() throws IOException {
+        BookingMapper bookingMapper = new BookingMapper();
+        Item item = new Item();
+        item.setId(1L);
+        Booking booking = bookingMapper.toBooking(bookingDto(), user(), item);
         JsonContent<Booking> content = jacksonTester.write(booking);
-
         assertThat(content).hasJsonPath("$.id");
         assertThat(content).hasJsonPath("$.start");
         assertThat(content).hasJsonPath("$.end");

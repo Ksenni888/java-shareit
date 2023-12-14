@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import ru.practicum.shareit.booking.dto.BookingDto2;
+import ru.practicum.shareit.booking.dto.DtoForNextLastBooking;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -83,8 +83,8 @@ public class ItemControllerTest {
     CommentDto commentDto = new CommentDto(0L, "text", user.getId(), user.getName(), LocalDateTime.of(2023, 12, 10, 11, 30));
     List<CommentDto> comments = List.of(commentDto);
     ItemRequest request = new ItemRequest(1L, "description", user, start);
-    BookingDto2 lastBooking = new BookingDto2(1L, start1, end1, user.getId());
-    BookingDto2 nextBooking = new BookingDto2(2L, start, end, user.getId());
+    DtoForNextLastBooking lastBooking = new DtoForNextLastBooking(1L, start1, end1, user.getId());
+    DtoForNextLastBooking nextBooking = new DtoForNextLastBooking(2L, start, end, user.getId());
     ItemDtoForOwners itemDtoForOwners = new ItemDtoForOwners(1L, "name", "description",
             true, request.getId(), lastBooking, nextBooking, comments);
     Booking booking = new Booking(1L, start, end, item, user, BookingStatus.APPROVED);
@@ -131,7 +131,6 @@ public class ItemControllerTest {
     public void findById() throws Exception {
 
         Mockito.when(itemService.findById(anyLong(), anyLong())).thenReturn(itemDtoForOwners);
-
         String itemForOunersUpdS = createItemForOunersJson("name", "description", lastBooking, nextBooking, true);
 
         mockMvc.perform(get("/items" + "/{itemId}", itemDtoForOwners.getId())
@@ -192,7 +191,7 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$[0].available").value(true));
     }
 
-    public static String createItemForOunersJson(String name, String description, BookingDto2 lastBooking, BookingDto2 nextBooking, boolean available) {
+    public static String createItemForOunersJson(String name, String description, DtoForNextLastBooking lastBooking, DtoForNextLastBooking nextBooking, boolean available) {
         return "{\n" +
                 "    \"name\": \"" + name + "\",\n" +
                 "    \"description\": \"" + description + "\",\n" +

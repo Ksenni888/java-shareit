@@ -39,27 +39,34 @@ public class BookingIntegrationTest {
     @Autowired
     private CommentRepository commentRepository;
 
+    private User user() {
+        User user = new User();
+        user.setId(0L);
+        user.setName("userName");
+        user.setEmail("user3@user.ru");
+        return user;
+    }
+
+    private User user2() {
+        User user2 = new User();
+        user2.setId(0L);
+        user2.setName("Нико");
+        user2.setEmail("nik90@mail.ru");
+        return user2;
+    }
+
     @Test
     public void getUserBookingsTest() {
         userRepository.deleteAll();
-        User user = new User(0L, "userName", "user3@user.ru");
-        User baseUser = userRepository.save(user);
-
-        User user2 = User.builder()
-                .id(0L)
-                .name("Нико")
-                .email("nik90@mail.ru")
-                .build();
-        User baseUser2 = userRepository.save(user2);
-
-        Item item = Item.builder()
-                .id(0L)
-                .name("item")
-                .description("description item")
-                .available(true)
-                .owner(baseUser)
-                .request(null)
-                .build();
+        User baseUser = userRepository.save(user());
+        User baseUser2 = userRepository.save(user2());
+        Item item = new Item();
+        item.setId(0L);
+        item.setName("item");
+        item.setDescription("description item");
+        item.setAvailable(true);
+        item.setOwner(baseUser);
+        item.setRequest(null);
         Item item1 = itemRepository.save(item);
 
         Booking baseBooking = new Booking();

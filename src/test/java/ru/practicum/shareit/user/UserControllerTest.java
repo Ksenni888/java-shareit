@@ -15,6 +15,7 @@ import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.nio.charset.StandardCharsets;
@@ -23,6 +24,7 @@ import java.util.List;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -41,6 +43,8 @@ public class UserControllerTest {
     private UserService userService;
     @Mock
     private UserMapper userMapper;
+    @Mock
+    private UserRepository userRepository;
     @InjectMocks
     private UserController userController;
 
@@ -57,6 +61,8 @@ public class UserControllerTest {
             .email("email@mail.ru")
             .build();
 
+    User user = new User(0L,"name","email@mail.ru");
+
     @Test
     public void createTest() throws Exception {
 
@@ -70,6 +76,10 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(userDto.getName()))
                 .andExpect(jsonPath("$.email").value(userDto.getEmail()));
+
+        Mockito.verify(userRepository, times(0)).save(user);
+        Mockito.verify(userService, times(1)).create(any());
+        Mockito.verifyNoMoreInteractions(userService);
     }
 
     @Test

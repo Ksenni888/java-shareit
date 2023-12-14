@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.booking.dto.BookingDto2;
+import ru.practicum.shareit.booking.dto.DtoForNextLastBooking;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -40,22 +40,22 @@ public class ItemMapper {
         return item;
     }
 
-    public BookingDto2 createLastBooking(Booking lastBooking) {
-        BookingDto2 bookingDto2 = new BookingDto2();
-        bookingDto2.setId(lastBooking.getId());
-        bookingDto2.setStart(lastBooking.getStart());
-        bookingDto2.setEnd(lastBooking.getEnd());
-        bookingDto2.setBookerId(lastBooking.getBooker().getId());
-        return bookingDto2;
+    public DtoForNextLastBooking createLastBooking(Booking lastBooking) {
+        DtoForNextLastBooking dtoForNextLastBooking = new DtoForNextLastBooking();
+        dtoForNextLastBooking.setId(lastBooking.getId());
+        dtoForNextLastBooking.setStart(lastBooking.getStart());
+        dtoForNextLastBooking.setEnd(lastBooking.getEnd());
+        dtoForNextLastBooking.setBookerId(lastBooking.getBooker().getId());
+        return dtoForNextLastBooking;
     }
 
-    public BookingDto2 createNextBooking(Booking nextBooking) {
-        BookingDto2 bookingDto2 = new BookingDto2();
-        bookingDto2.setId(nextBooking.getId());
-        bookingDto2.setStart(nextBooking.getStart());
-        bookingDto2.setEnd(nextBooking.getEnd());
-        bookingDto2.setBookerId(nextBooking.getBooker().getId());
-        return bookingDto2;
+    public DtoForNextLastBooking createNextBooking(Booking nextBooking) {
+        DtoForNextLastBooking dtoForNextLastBooking = new DtoForNextLastBooking();
+        dtoForNextLastBooking.setId(nextBooking.getId());
+        dtoForNextLastBooking.setStart(nextBooking.getStart());
+        dtoForNextLastBooking.setEnd(nextBooking.getEnd());
+        dtoForNextLastBooking.setBookerId(nextBooking.getBooker().getId());
+        return dtoForNextLastBooking;
     }
 
     public ItemDtoForOwners toItemDtoForOwners(Item item, long userId, Booking lastBooking, Booking nextBooking, List<CommentDto> comments) {

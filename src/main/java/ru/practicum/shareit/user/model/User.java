@@ -31,6 +31,6 @@ public class User {
     private String name;
 
     @Column(name = "email", length = 512, nullable = false, unique = true)
-    @Email
+  //  @Email
     private String email;
 }
