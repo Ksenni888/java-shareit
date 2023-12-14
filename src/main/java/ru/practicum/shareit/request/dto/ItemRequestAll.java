@@ -8,17 +8,15 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemRequestDto {
-    private long id;
-    private LocalDateTime created;
-    @NotNull
-    private String description;
-    private List<ItemDtoForRequest> items;
+public class ItemRequestAll {
+        private long id;
+        private LocalDateTime created;
+        @NotNull
+        private String description;
 }
