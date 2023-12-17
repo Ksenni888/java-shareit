@@ -9,15 +9,15 @@ import lombok.Setter;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
-@Setter
 @Getter
+@Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
+@NoArgsConstructor
+public class User {
     @NotNull
+    private long id;
     private String name;
-
     @Email
     @NotNull
     private String email;
