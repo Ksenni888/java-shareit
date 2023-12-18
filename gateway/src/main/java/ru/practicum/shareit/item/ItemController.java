@@ -52,9 +52,8 @@ public class ItemController {
     @GetMapping("/search")
     @ResponseBody
     public ResponseEntity<Object> findItems(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam String text,
-                                   @RequestParam(defaultValue = "0") @Min(0) Integer from,
-                                   @RequestParam(defaultValue = "10") @Min(1) Integer size) {
-
+                                            @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                            @RequestParam(defaultValue = "10") @Min(1) Integer size) {
         return itemClient.findItems(text, from, size, userId);
     }
 
