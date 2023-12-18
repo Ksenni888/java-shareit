@@ -19,7 +19,6 @@ import ru.practicum.shareit.user.dto.User;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 
-
 @RestController
 @AllArgsConstructor
 @RequestMapping(path = "/users")
