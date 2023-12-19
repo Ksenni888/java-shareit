@@ -58,9 +58,6 @@ public class ItemController {
     public ResponseEntity<Object> findItems(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam String text,
                                             @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                             @RequestParam(defaultValue = "10") @Min(1) Integer size) {
-//        if (text.isBlank()) {
-//            throw new ValidationException("Text can't be empty");
-//        }
         return itemClient.findItems(text, from, size, userId);
     }
 
