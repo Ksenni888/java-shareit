@@ -19,9 +19,7 @@ import ru.practicum.shareit.item.dto.Item;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import javax.validation.constraints.Min;
-import java.util.Collections;
 
 @RestController
 @RequiredArgsConstructor
