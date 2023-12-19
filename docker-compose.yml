@@ -20,15 +20,14 @@ services:
     depends_on:
       - db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
   db:
-    image: postgres:14-alpine
+    image: postgres:13-alpine
     container_name: shareit-db-postgres
     ports:
-#      - "6541:5432"
       - "5433:5432"
     environment:
       - POSTGRES_DB=shareit
