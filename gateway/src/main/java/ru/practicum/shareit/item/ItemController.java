@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.exception.ValidException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.Item;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import javax.validation.constraints.Min;
+import java.util.Collections;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,6 +34,9 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<Object> createItem(@RequestHeader(USER_ID_HEADER) long userId, @Valid @RequestBody ItemDto itemDto) {
+        if (itemDto.getId() != 0) {
+            throw new ValidException("id must be 0");
+        }
         return itemClient.createItem(userId, itemDto);
     }
 
@@ -54,12 +60,18 @@ public class ItemController {
     public ResponseEntity<Object> findItems(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam String text,
                                             @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                             @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+//        if (text.isBlank()) {
+//            throw new ValidationException("Text can't be empty");
+//        }
         return itemClient.findItems(text, from, size, userId);
     }
 
     @PostMapping("/{itemId}/comment")
     @ResponseBody
     public ResponseEntity<Object> addComment(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long itemId, @RequestBody CommentDto commentDto) {
+        if (commentDto.getText().isBlank()) {
+            throw new ValidException("This field can't be empty, write the text");
+        }
         return itemClient.addComment(userId, itemId, commentDto);
     }
 }

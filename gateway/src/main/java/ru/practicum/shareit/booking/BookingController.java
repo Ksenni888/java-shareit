@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.exception.ValidException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +30,15 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<Object> createBooking(@RequestHeader(USER_ID_HEADER) long userId, @Valid @RequestBody BookingDto bookingDto) {
+        LocalDateTime startTime = bookingDto.getStart();
+
+        if (startTime.isAfter(bookingDto.getEnd())) {
+            throw new ValidException("Data start can't be later then end");
+        }
+
+        if (startTime.isEqual(bookingDto.getEnd())) {
+            throw new ValidException("Dates start and end can be different");
+        }
         return bookingClient.createBooking(userId, bookingDto);
     }
 
@@ -38,6 +49,13 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     public ResponseEntity<Object> checkRequest(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long bookingId, @RequestParam String approved) {
+        if (approved.isBlank()) {
+            throw new ValidException("approved must be true/false");
+        }
+
+        if (bookingId == 0) {
+            throw new ValidException("bookingId can't be null");
+        }
         return bookingClient.checkRequest(userId, bookingId, approved);
     }
 

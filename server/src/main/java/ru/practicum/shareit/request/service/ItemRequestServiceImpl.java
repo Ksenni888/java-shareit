@@ -13,8 +13,9 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
-import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -43,6 +44,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return itemRequestMapper.toDtoRequest(baseItemRequest, itemRepository.findByRequestId(baseItemRequest.getId()));
     }
 
+    @Transactional
     @Override
     public ItemRequest addRequest(long userId, ItemRequestDto itemRequestDto) {
         if (itemRequestDto.getId() != 0) {
@@ -56,7 +58,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
         User user = userRepository.findById(userId).orElseThrow();
         ItemRequest baseItemRequest = itemRequestMapper.toRequest(itemRequestDto, user);
-
         return itemRequestRepository.save(baseItemRequest);
     }
 
@@ -65,13 +66,16 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
         }
+
         List<ItemRequest> baseItemRequests = itemRequestRepository.findByUserId(userId);
+
         if (baseItemRequests.isEmpty()) {
             return Collections.emptyList();
         }
 
         return baseItemRequests.stream().map(x -> itemRequestMapper.toDtoRequest(x, itemRepository.findByRequestId(x.getId())))
                 .sorted(Comparator.comparing(ItemRequestDto::getCreated)).collect(Collectors.toList());
+
     }
 
     @Override

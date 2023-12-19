@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.exception.ValidException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import javax.validation.Valid;
@@ -26,11 +28,16 @@ public class ItemRequestController {
 
     @PostMapping
     public ResponseEntity<Object> addRequest(@RequestHeader(USER_ID_HEADER) long userId, @RequestBody @Valid ItemRequestDto itemRequestDto) {
+        if (itemRequestDto.getId() != 0) {
+            throw new ValidException("id must be 0");
+        }
+
         return itemRequestClient.addRequest(userId, itemRequestDto);
     }
 
     @GetMapping("/{requestId}")
     public ResponseEntity<Object> findRequestById(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long requestId) {
+
         return itemRequestClient.findRequestById(userId, requestId);
     }
 

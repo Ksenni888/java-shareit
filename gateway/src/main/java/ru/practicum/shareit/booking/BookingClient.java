@@ -32,7 +32,7 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> checkRequest(long userId, long bookingId, String approved) {
-        return patch("/" + bookingId, userId, approved);
+        return patch("/" + bookingId + "?approved=" + approved, userId);
     }
 
     public ResponseEntity<Object> getBookingsByStatus(long userId, String state, Integer from, Integer size) {
