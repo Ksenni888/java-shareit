@@ -8,6 +8,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.client.BaseClient;
+import ru.practicum.shareit.exception.ValidException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.Item;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -26,6 +27,9 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> createItem(long userId, ItemDto itemDto) {
+        if (itemDto.getId() != 0) {
+            throw new ValidException("id must be 0");
+        }
         return post("", userId, itemDto);
     }
 
@@ -38,7 +42,7 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getItemsByUserId(long userId, Integer from, Integer size) {
-        Map<String,Object> parameters = Map.of(
+        Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size);
 
@@ -55,6 +59,9 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> addComment(long userId, long itemId, CommentDto commentDto) {
+        if (commentDto.getText().isBlank()) {
+            throw new ValidException("This field can't be empty, write the text");
+        }
         return post("/" + itemId + "/comment", userId, commentDto);
     }
 }

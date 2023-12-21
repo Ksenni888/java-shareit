@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.client.BaseClient;
+import ru.practicum.shareit.exception.ValidException;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -24,6 +26,13 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> createBooking(long userId, BookingDto bookingDto) {
+        LocalDateTime startTime = bookingDto.getStart();
+        if (startTime.isAfter(bookingDto.getEnd())) {
+            throw new ValidException("Data start can't be later then end");
+        }
+        if (startTime.isEqual(bookingDto.getEnd())) {
+            throw new ValidException("Dates start and end can be different");
+        }
         return post("", userId, bookingDto);
     }
 
@@ -32,6 +41,12 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> checkRequest(long userId, long bookingId, String approved) {
+        if (approved.isEmpty()) {
+            throw new ValidException("approved must be true/false");
+        }
+        if (bookingId == 0) {
+            throw new ValidException("bookingId can't be null");
+        }
         return patch("/" + bookingId + "?approved=" + approved, userId);
     }
 

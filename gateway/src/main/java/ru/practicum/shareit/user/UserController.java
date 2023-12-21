@@ -15,7 +15,6 @@ import ru.practicum.shareit.user.dto.User;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 
 @RestController
 @AllArgsConstructor
@@ -26,9 +25,6 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<Object> create(@Valid @RequestBody UserDto userDto) {
-        if (userDto.getEmail() == null || userDto.getEmail().isBlank()) {
-            throw new ValidationException("Email can't be empty");
-        }
         return userClient.create(userDto);
     }
 

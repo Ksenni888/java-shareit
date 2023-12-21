@@ -11,6 +11,8 @@ import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.user.dto.User;
 import ru.practicum.shareit.user.dto.UserDto;
 
+import javax.validation.ValidationException;
+
 @Service
 public class UserClient extends BaseClient {
 
@@ -27,6 +29,9 @@ public class UserClient extends BaseClient {
     }
 
     public ResponseEntity<Object> create(UserDto userDto) {
+        if (userDto.getEmail() == null || userDto.getEmail().isBlank()) {
+            throw new ValidationException("Email can't be empty");
+        }
         return post("", userDto);
     }
 
