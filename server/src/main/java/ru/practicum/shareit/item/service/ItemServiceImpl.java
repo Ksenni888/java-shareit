@@ -27,7 +27,6 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -120,7 +119,7 @@ public class ItemServiceImpl implements ItemService {
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
         }
-             return itemRepository.findByOwnerId(userId, pageable).stream()
+        return itemRepository.findByOwnerId(userId, pageable).stream()
                 .map(x -> findById(x.getId(), userId))
                 .collect(Collectors.toList());
     }
