@@ -35,8 +35,9 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
     private final BookingMapper bookingMapper;
 
-    @Transactional(rollbackFor = Exception.class)
+
     @Override
+    @Transactional
     public Booking createBooking(long userId, BookingDto bookingDto) {
         LocalDateTime startTime = bookingDto.getStart();
 
@@ -77,8 +78,9 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.save(baseBooking);
     }
 
-    @Transactional
+
     @Override
+    @Transactional
     public Booking checkRequest(long userId, long bookingId, String approved) {
         if (approved.isBlank()) {
             throw new ValidException("approved must be true/false");
@@ -156,7 +158,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<Booking> getUserBookings(long ownerId, String state, Pageable pageable) {
-        List<Item> itemByOwnerId = itemRepository.findByOwnerId(ownerId);
+        List<Item> itemByOwnerId = itemRepository.findByOwnerId(ownerId, Pageable.unpaged());
 
         if (itemByOwnerId.isEmpty()) {
             throw new ObjectNotFoundException("This owner haven't any item");

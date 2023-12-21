@@ -52,7 +52,8 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<Booking> getBookingsByStatus(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam(defaultValue = "ALL") String state,
+    public List<Booking> getBookingsByStatus(@RequestHeader(USER_ID_HEADER) long userId,
+                                             @RequestParam(defaultValue = "ALL") String state,
                                              @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                              @RequestParam(defaultValue = "10") @Min(1) Integer size) {
 
@@ -62,10 +63,12 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public List<Booking> getUserBookings(@RequestHeader(USER_ID_HEADER) long userId, @RequestParam(defaultValue = "ALL") String state,
+    public List<Booking> getUserBookings(@RequestHeader(USER_ID_HEADER) long userId,
+                                         @RequestParam(defaultValue = "ALL") String state,
                                          @RequestParam(defaultValue = "0") @Min(0) Integer from,
                                          @RequestParam(defaultValue = "10") @Min(1) Integer size) {
 
-        return bookingService.getUserBookings(userId, state, PageRequest.of(from / size, size, Sort.by("start").descending()));
+        return bookingService.getUserBookings(userId, state,
+                PageRequest.of(from / size, size, Sort.by("start").descending()));
     }
 }

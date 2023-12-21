@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -114,29 +116,28 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoForOwners> getItemsByUserId(long userId) {
-
+    public List<ItemDtoForOwners> getItemsByUserId(long userId, Pageable pageable) {
         if (!userRepository.existsById(userId)) {
             throw new ObjectNotFoundException("User not found");
         }
-
-        return itemRepository.findByOwnerId(userId).stream()
+             return itemRepository.findByOwnerId(userId, pageable).stream()
                 .map(x -> findById(x.getId(), userId))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Item> findItems(String text) {
+    public List<Item> findItems(long userId, String text, Pageable pageable) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
 
-        return itemRepository.search(text).stream()
+        return itemRepository.search(text, pageable).stream()
                 .filter(Item::getAvailable)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional
     public Comments addComment(long userId, long itemId, CommentDto commentDto) {
         if (commentDto.getText().isBlank()) {
             throw new ValidException("This field can't be empty, write the text");

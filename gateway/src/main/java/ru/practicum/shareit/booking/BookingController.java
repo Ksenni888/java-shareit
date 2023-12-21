@@ -48,8 +48,10 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public ResponseEntity<Object> checkRequest(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long bookingId, @RequestParam String approved) {
-        if (approved.isBlank()) {
+    public ResponseEntity<Object> checkRequest(@RequestHeader(USER_ID_HEADER) long userId,
+                                               @PathVariable long bookingId,
+                                               @RequestParam String approved) {
+        if (approved.isEmpty()) {
             throw new ValidException("approved must be true/false");
         }
 

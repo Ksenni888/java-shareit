@@ -49,8 +49,10 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getItemsByUserId(@RequestHeader(USER_ID_HEADER) long userId) {
-        return itemClient.getItemsByUserId(userId);
+    public ResponseEntity<Object> getItemsByUserId(@RequestHeader(USER_ID_HEADER) long userId,
+                                                   @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                   @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+        return itemClient.getItemsByUserId(userId, from, size);
     }
 
     @GetMapping("/search")

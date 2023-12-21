@@ -3,6 +3,8 @@ package ru.practicum.shareit.item.controller;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -58,9 +60,12 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDtoForOwners> getItemsByUserId(@RequestHeader(USER_ID_HEADER) long userId) {
+    public List<ItemDtoForOwners> getItemsByUserId(@RequestHeader(USER_ID_HEADER) long userId,
+                                                   @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                   @RequestParam(defaultValue = "10") @Min(1) Integer size
+                                                  ) {
         log.info("Get all user's items");
-        return itemService.getItemsByUserId(userId);
+        return itemService.getItemsByUserId(userId, PageRequest.of(from / size, size, Sort.by("id")));
     }
 
     @GetMapping("/search")
@@ -70,7 +75,7 @@ public class ItemController {
                                    @RequestParam(defaultValue = "10") @Min(1) Integer size) {
 
         log.info("Seach items by request with available status");
-        return itemService.findItems(text).stream()
+        return itemService.findItems(userId, text, PageRequest.of(from / size, size)).stream()
                 .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }

@@ -42,10 +42,11 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         }
         ItemRequest baseItemRequest = itemRequestRepository.findById(requestId).orElseThrow();
         return itemRequestMapper.toDtoRequest(baseItemRequest, itemRepository.findByRequestId(baseItemRequest.getId()));
+
     }
 
-    @Transactional
     @Override
+    @Transactional
     public ItemRequest addRequest(long userId, ItemRequestDto itemRequestDto) {
         if (itemRequestDto.getId() != 0) {
             log.warn("id must be 0");
@@ -68,7 +69,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         }
 
         List<ItemRequest> baseItemRequests = itemRequestRepository.findByUserId(userId);
-
         if (baseItemRequests.isEmpty()) {
             return Collections.emptyList();
         }
